@@ -11,6 +11,7 @@ public class AuthManager : SingletonPersistent<AuthManager>
     public AuthState State { get; private set; } = AuthState.None;
 
     public bool IsSignedIn => AuthenticationService.Instance.IsSignedIn;
+    public bool hasUnityId;
     #endregion
 
     #region Excute
@@ -31,8 +32,6 @@ public class AuthManager : SingletonPersistent<AuthManager>
     #endregion
 
     #region Auth
-    public event EventHandler OnAuthReady;
-
     private async Task InitializeAsync()
     {
         State = AuthState.Initializing;
@@ -55,22 +54,32 @@ public class AuthManager : SingletonPersistent<AuthManager>
         }
     }
 
-    public async Task LinkWithGoogleAsyc(string idToken)
+    #region Unity Auth
+    public async Task SignedInOrLinkWithUnityAsyc(string accessToken)
     {
-        if(!AuthenticationService.Instance.IsSignedIn)
-        {
-            Debug.LogWarning("You need to signed in first");
-        }
-
         try
         {
-            await AuthenticationService.Instance.LinkWithGoogleAsync(idToken);
-            Debug.Log("Google account Linked successfully");
+            // Not yet Authenticate 
+            if(!AuthenticationService.Instance.IsSignedIn)
+            {
+                Debug.LogWarning("You need to signed in first");
+                await AuthenticationService.Instance.SignInWithUnityAsync(accessToken);
+                Debug.Log("Successfully signed up with Unity Player Account");
+                return;
+            }
+
+            // Player Has Auth but don't have Link yet
+            if (!HasUnityId())
+            {
+                await AuthenticationService.Instance.LinkWithUnityAsync(accessToken);
+                Debug.Log("Unity account Linked successfully");
+                return;
+            }
         }
 
         catch (AuthenticationException e)
         {
-            Debug.LogError($"Google link failed: {e}");
+            Debug.LogError($"Unity link failed: {e}");
         }
 
         catch (RequestFailedException e)
@@ -78,6 +87,12 @@ public class AuthManager : SingletonPersistent<AuthManager>
             Debug.LogError($"Request failed: {e}");
         }
     }
+
+    private bool HasUnityId()
+    {
+        return hasUnityId = (AuthenticationService.Instance.PlayerInfo.GetUnityId() != null);
+    }
+    #endregion
 
     public async Task RetryAuthAsync()
     {
@@ -94,6 +109,8 @@ public class AuthManager : SingletonPersistent<AuthManager>
     #endregion
 
     #region Sign In/Out
+    public event EventHandler OnAuthReady;
+
     public async Task SignOutAysnc()
     {
         if (!AuthenticationService.Instance.IsSignedIn)
