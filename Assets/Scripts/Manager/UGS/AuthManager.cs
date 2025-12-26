@@ -42,6 +42,7 @@ public class AuthManager : SingletonPersistent<AuthManager>
 
             AuthenticationService.Instance.SignedIn += HandleSignedIn;
 
+            // Not yet Authenticate, sign in Anynomously first
             if (!AuthenticationService.Instance.IsSignedIn)
             {
                 await AuthenticationService.Instance.SignInAnonymouslyAsync();
@@ -64,7 +65,7 @@ public class AuthManager : SingletonPersistent<AuthManager>
             {
                 Debug.LogWarning("You need to signed in first");
                 await AuthenticationService.Instance.SignInWithUnityAsync(accessToken);
-                Debug.Log("Successfully signed up with Unity Player Account");
+                Debug.Log($"Successfully signed up with Unity Player Account: {AuthenticationService.Instance.SignInWithUnityAsync(accessToken)}");
                 return;
             }
 
@@ -143,7 +144,6 @@ public class AuthManager : SingletonPersistent<AuthManager>
     {
         PlayerId = AuthenticationService.Instance.PlayerId;
         State = AuthState.SignedIn;
-        Debug.Log($"Signed in. PlayerId: {PlayerId}");
 
         OnAuthReady?.Invoke(this, EventArgs.Empty);
     }
