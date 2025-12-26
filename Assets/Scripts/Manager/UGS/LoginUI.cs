@@ -46,6 +46,10 @@ public class LoginUI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Linked with Unity Btn
+    /// </summary>
+    /// <returns>Access Token of that account</returns>
     public async void OnLoginUnity()
     {
         unityLinkButton.interactable = false;

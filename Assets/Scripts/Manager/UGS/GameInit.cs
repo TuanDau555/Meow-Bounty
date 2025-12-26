@@ -14,6 +14,10 @@ public class GameInit : MonoBehaviour
 
     private void HandleAuthReady(object sender, EventArgs e)
     {
+        string playerId = AuthManager.Instance.PlayerId;
+
+        PlayFabLoginService.LinkedWithUnityPlayerId(playerId);
+
         SceneManager.LoadSceneAsync("Main Menu");
     }
 }
