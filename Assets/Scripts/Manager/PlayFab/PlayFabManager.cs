@@ -67,6 +67,23 @@ public class PlayFabManager : SingletonPersistent<PlayFabManager>
             error => onError?.Invoke(error.GenerateErrorReport())
         );
     }
+
+    public static void SaveProfile(PlayerData data)
+    {
+        var json = JsonUtility.ToJson(data);
+
+        PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest
+        {
+            Data = new Dictionary<string, string>
+            {
+                { PROFILE_KEY, json}
+            }
+        },
+        sucess => Debug.Log("Profile Save"),
+        error => Debug.LogError(error.ErrorMessage)
+        );
+    }
+    
     public static void SetDisplayName(string name, Action onSuccess, Action<string> onError)
     {
         var request = new UpdateUserTitleDisplayNameRequest
