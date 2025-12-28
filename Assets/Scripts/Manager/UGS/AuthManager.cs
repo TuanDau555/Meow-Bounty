@@ -7,11 +7,15 @@ using UnityEngine;
 public class AuthManager : SingletonPersistent<AuthManager>
 {
     #region Parameter
-    public string PlayerId { get; private set; }
-    public AuthState State { get; private set; } = AuthState.None;
-
     public bool IsSignedIn => AuthenticationService.Instance.IsSignedIn;
-    public bool hasUnityId;
+    
+    /// <summary>
+    /// Ready to login PlayFab
+    /// </summary>
+    public bool IsReady { get ; set; }
+    public AuthState State { get; set; } = AuthState.None;
+    public string PlayerId { get; private set; }
+    public bool hasUnityId { get; private set; }
     #endregion
 
     #region Excute
@@ -92,6 +96,18 @@ public class AuthManager : SingletonPersistent<AuthManager>
     private bool HasUnityId()
     {
         return hasUnityId = (AuthenticationService.Instance.PlayerInfo.GetUnityId() != null);
+    }
+    #endregion
+
+    #region PlayFab Ready
+    // ready to load data from PlayFab
+    public void MarkReady()
+    {
+        if (IsReady) return;
+
+        IsReady = true;
+        Debug.Log("PlayFab Ready");
+        OnAuthReady?.Invoke(this, EventArgs.Empty);
     }
     #endregion
 

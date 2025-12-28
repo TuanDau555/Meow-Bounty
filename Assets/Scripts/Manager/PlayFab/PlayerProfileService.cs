@@ -8,6 +8,7 @@ public class PlayerProfileService
     
     public void LoadOrCreateProfile(Action onReady)
     {
+        Debug.Log("LoadOrCreateProfile start");
         PlayFabManager.LoadProfile(playerData =>
         {
             if(playerData == null)
@@ -16,8 +17,16 @@ public class PlayerProfileService
 
                 PlayFabManager.CreateProfile(
                     PlayerData, 
-                    () => LoadDisplayName(onReady), 
-                    Debug.LogError);
+                    () => 
+                    {
+                        Debug.Log("Profile Create/Load");
+                        LoadDisplayName(onReady);
+                    },
+                    error =>
+                    {
+                        Debug.LogError(error);
+                        onReady?.Invoke();   
+                    });
             }
             else
             {
@@ -25,7 +34,11 @@ public class PlayerProfileService
                 LoadDisplayName(onReady);
             }
         },
-        Debug.LogError);
+        error =>
+        {
+            Debug.LogError(error);
+            onReady?.Invoke();
+        });
     }
 
     private void LoadDisplayName(Action onReady)
@@ -43,4 +56,6 @@ public class PlayerProfileService
     {
         return string.IsNullOrEmpty(DisplayName);
     }
+
+    // TODO: NEED A SAVE PROFILE FOR CHARACTER EQUIP
 }

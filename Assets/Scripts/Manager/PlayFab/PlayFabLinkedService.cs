@@ -20,6 +20,7 @@ public static class PlayFabLoginService
             result =>
             {
                 Debug.Log("PlayFab linked Success");
+                AuthManager.Instance.MarkReady();
                 onSuccess?.Invoke();  
             },
             error =>
