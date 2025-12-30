@@ -1,37 +1,23 @@
 ﻿using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.UI;
+using System.Text;
 
 public class NetworkManagerUI : MonoBehaviour
 {
-    [SerializeField] private Button hostBtn;
-    [SerializeField] private Button clientBtn;
-    [SerializeField] private GameObject menuPanel; // Kéo cái Panel chứa các nút vào đây
-
-    private void Awake()
+    public void StartHost()
     {
-        hostBtn.onClick.AddListener(() => {
-            // Kiểm tra nếu chưa chạy thì mới cho chạy
-            if (!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsServer)
-            {
-                NetworkManager.Singleton.StartHost();
-                HideMenu();
-            }
-        });
-
-        clientBtn.onClick.AddListener(() => {
-            if (!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsServer)
-            {
-                NetworkManager.Singleton.StartClient();
-                HideMenu();
-            }
-        });
+        // Gửi lựa chọn nhân vật dưới dạng chuỗi (Payload)
+        NetworkManager.Singleton.NetworkConfig.ConnectionData =
+            Encoding.ASCII.GetBytes(CharacterSelector.SelectedIndex.ToString());
+        NetworkManager.Singleton.StartHost();
+        gameObject.SetActive(false);
     }
 
-    private void HideMenu()
+    public void StartClient()
     {
-        if (menuPanel != null) menuPanel.SetActive(false);
-        // Hoặc đơn giản là ẩn chính cái Object chứa script này
-        // gameObject.SetActive(false); 
+        NetworkManager.Singleton.NetworkConfig.ConnectionData =
+            Encoding.ASCII.GetBytes(CharacterSelector.SelectedIndex.ToString());
+        NetworkManager.Singleton.StartClient();
+        gameObject.SetActive(false);
     }
 }
