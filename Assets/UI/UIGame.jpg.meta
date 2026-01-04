@@ -1,0 +1,578 @@
+fileFormatVersion: 2
+guid: b049e6d5e1717c9448a271255d5b8b0c
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 0
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 0
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: UIGame_0
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 1628
+        width: 200
+        height: 264
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 0, y: -32}
+        - {x: 32, y: 0}
+        - {x: 0, y: 32}
+        - {x: -32, y: 0}
+      - - {x: -132, y: 590}
+        - {x: -132, y: 946}
+        - {x: 433, y: 946}
+        - {x: 433, y: 590}
+      physicsShape:
+      - - {x: -212, y: 221}
+        - {x: -211, y: 223}
+        - {x: -208, y: 224}
+        - {x: -208, y: 227}
+        - {x: -205, y: 228}
+        - {x: -205, y: 231}
+        - {x: -199, y: 233}
+        - {x: -195, y: 240}
+        - {x: -195, y: 256}
+        - {x: -198, y: 261}
+        - {x: -205, y: 264}
+        - {x: -207, y: 265}
+        - {x: -208, y: 267}
+        - {x: -208, y: 273}
+        - {x: -467, y: 272}
+        - {x: -468, y: 270}
+        - {x: -471, y: 269}
+        - {x: -474, y: 264}
+        - {x: -479, y: 263}
+        - {x: -483, y: 258}
+        - {x: -483, y: 239}
+        - {x: -481, y: 239}
+        - {x: -481, y: 236}
+        - {x: -477, y: 233}
+        - {x: -473, y: 231}
+        - {x: -471, y: 226}
+        - {x: -467, y: 223}
+        - {x: -463, y: 220}
+      - - {x: 396, y: 609}
+        - {x: 389, y: 607}
+        - {x: 382, y: 607}
+        - {x: 339, y: 603}
+        - {x: 332, y: 604}
+        - {x: 265, y: 604}
+        - {x: 262, y: 599}
+        - {x: 256, y: 604}
+        - {x: 212, y: 604}
+        - {x: 201, y: 600}
+        - {x: 151, y: 600}
+        - {x: 126, y: 600}
+        - {x: 120, y: 603}
+        - {x: 116, y: 605}
+        - {x: 37, y: 605}
+        - {x: -21, y: 605}
+        - {x: -21, y: 604}
+        - {x: -76, y: 604}
+        - {x: -82, y: 608}
+        - {x: -88, y: 613}
+        - {x: -92, y: 619}
+        - {x: -93, y: 624}
+        - {x: -96, y: 624}
+        - {x: -95, y: 669}
+        - {x: -90, y: 674}
+        - {x: -90, y: 677}
+        - {x: -92, y: 705}
+        - {x: -119, y: 708}
+        - {x: -116, y: 740}
+        - {x: -91.97717, y: 740.8248}
+        - {x: -92, y: 744}
+        - {x: -119, y: 745}
+        - {x: -115, y: 778}
+        - {x: -88.10092, y: 779.9115}
+        - {x: -88, y: 786}
+        - {x: -127, y: 788}
+        - {x: -124, y: 821}
+        - {x: -90, y: 823}
+        - {x: -90, y: 856}
+        - {x: -100.85983, y: 863.32825}
+        - {x: -101, y: 867}
+        - {x: -99, y: 915}
+        - {x: -94, y: 923}
+        - {x: -83, y: 929}
+        - {x: -37, y: 932}
+        - {x: -33, y: 919}
+        - {x: 9, y: 927}
+        - {x: 61, y: 931}
+        - {x: 122, y: 931}
+        - {x: 143, y: 929}
+        - {x: 150, y: 925}
+        - {x: 155, y: 921}
+        - {x: 158, y: 925}
+        - {x: 165, y: 928}
+        - {x: 174, y: 930}
+        - {x: 220, y: 931}
+        - {x: 279, y: 929}
+        - {x: 341, y: 920}
+        - {x: 344.18964, y: 928.8622}
+        - {x: 393, y: 930}
+        - {x: 403, y: 922}
+        - {x: 407, y: 915}
+        - {x: 410, y: 898}
+        - {x: 412, y: 881}
+        - {x: 412, y: 870}
+        - {x: 411, y: 867}
+        - {x: 404, y: 863}
+        - {x: 405, y: 714}
+        - {x: 404, y: 682}
+        - {x: 412, y: 670}
+        - {x: 410, y: 626}
+        - {x: 406, y: 618}
+        - {x: 401, y: 612}
+      - - {x: 517, y: 176}
+        - {x: 513, y: 173}
+        - {x: 507.53345, y: 171}
+        - {x: 459, y: 171}
+        - {x: 454, y: 173}
+        - {x: 449, y: 178}
+        - {x: 445, y: 184}
+        - {x: 446, y: 238}
+        - {x: 451, y: 243}
+        - {x: 458, y: 247}
+        - {x: 511, y: 247}
+        - {x: 515, y: 244}
+        - {x: 520, y: 237}
+        - {x: 520, y: 181}
+      - - {x: -463, y: 155}
+        - {x: -469, y: 159}
+        - {x: -474, y: 166}
+        - {x: -480, y: 170}
+        - {x: -484, y: 177}
+        - {x: -483, y: 189}
+        - {x: -478, y: 195}
+        - {x: -471, y: 199}
+        - {x: -469, y: 204}
+        - {x: -464, y: 206}
+        - {x: -209, y: 206}
+        - {x: -211, y: 201}
+        - {x: -208, y: 198}
+        - {x: -206, y: 196}
+        - {x: -203, y: 196}
+        - {x: -198, y: 193}
+        - {x: -197, y: 190}
+        - {x: -197, y: 173}
+        - {x: -199, y: 171}
+        - {x: -202, y: 168}
+        - {x: -203, y: 167}
+        - {x: -206, y: 166}
+        - {x: -208, y: 164}
+        - {x: -208, y: 161}
+        - {x: -211, y: 158}
+        - {x: -215, y: 156}
+      - - {x: -219, y: 82}
+        - {x: -467, y: 82}
+        - {x: -473, y: 86}
+        - {x: -476, y: 88}
+        - {x: -476, y: 92}
+        - {x: -481, y: 95}
+        - {x: -487, y: 100}
+        - {x: -487, y: 117}
+        - {x: -484, y: 122}
+        - {x: -479, y: 125}
+        - {x: -476, y: 126}
+        - {x: -475, y: 129}
+        - {x: -474, y: 131}
+        - {x: -468, y: 134}
+        - {x: -214, y: 135}
+        - {x: -213.89603, y: 129.38403}
+        - {x: -213, y: 128}
+        - {x: -211, y: 125}
+        - {x: -206, y: 123}
+        - {x: -202, y: 119}
+        - {x: -200, y: 118}
+        - {x: -200, y: 102}
+        - {x: -201, y: 101}
+        - {x: -202, y: 97}
+        - {x: -205, y: 95}
+        - {x: -208, y: 93}
+        - {x: -211, y: 92}
+        - {x: -211.76205, y: 87.808716}
+        - {x: -215, y: 84}
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0eb8134467d55ca4ab896b4f9af05e0e
+      internalID: -754294531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIGame_1
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 1285
+        width: 284
+        height: 331
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9e07d20feeeeec945a80353f2aef278e
+      internalID: -525098704
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIGame_2
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 1176
+        width: 302
+        height: 68
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64247e8846befa14eaf3d47d03df4971
+      internalID: -1013453588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIGame_3
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 1110
+        width: 300
+        height: 60
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec7d3b6aef0f41a43b061d9a6f88b91d
+      internalID: 1025853929
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIGame_4
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 1035
+        width: 296
+        height: 67
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a9a121c46db82024a895af80e8e88813
+      internalID: -613692376
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIGame_5
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 932
+        width: 329
+        height: 89
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f4e015c199f3ad34199b0d9dbcdc20a1
+      internalID: -850389588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIGame_6
+      rect:
+        serializedVersion: 2
+        x: 37
+        y: 836
+        width: 326
+        height: 82
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ce07093dfd834044bbd1a94b4ea6059e
+      internalID: -687742424
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIGame_7
+      rect:
+        serializedVersion: 2
+        x: 986
+        y: 1131
+        width: 76
+        height: 76
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 959c44cb8c797704b9567c32ab0487ef
+      internalID: -385380240
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIGame_8
+      rect:
+        serializedVersion: 2
+        x: 683
+        y: 193
+        width: 78
+        height: 80
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 47c36b9b7fdae1e45be4c2d67a1506a6
+      internalID: -137416579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIGame_9
+      rect:
+        serializedVersion: 2
+        x: 612
+        y: 1273
+        width: 223
+        height: 251
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 37c7e1ac7733b1e4a832805b274ddc34
+      internalID: -1048153520
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIGame_10
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 1562
+        width: 537
+        height: 328
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0ad1f4f853ac46f4089287fde8776029
+      internalID: 1859334099
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIGame_11
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 384
+        width: 288
+        height: 105
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b7eedd78669b2c247be0f6e6839ac41c
+      internalID: -1110666830
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIGame_12
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 508
+        width: 289
+        height: 102
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eae43f75997131e418876f65634810e8
+      internalID: -1379019476
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      UIGame_0: -754294531
+      UIGame_1: -525098704
+      UIGame_10: 1859334099
+      UIGame_11: -1110666830
+      UIGame_12: -1379019476
+      UIGame_2: -1013453588
+      UIGame_3: 1025853929
+      UIGame_4: -613692376
+      UIGame_5: -850389588
+      UIGame_6: -687742424
+      UIGame_7: -385380240
+      UIGame_8: -137416579
+      UIGame_9: -1048153520
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
