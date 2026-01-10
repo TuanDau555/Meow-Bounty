@@ -4,37 +4,58 @@ using System.Text;
 
 public class PlayerSpawner : MonoBehaviour
 {
-    [SerializeField] private GameObject[] playerPrefabs; // Kéo 2 Prefab vào đây theo đúng thứ tự 0 và 1
+    [Header("Cài đặt vị trí")]
+    public Transform spawnPoint; // Kéo Object SpawnPoint vào đây
 
     void Start()
     {
-        // Đăng ký hàm phê duyệt kết nối khi Server bắt đầu
-        NetworkManager.Singleton.ConnectionApprovalCallback = ApprovalCheck;
+        if (NetworkManager.Singleton != null)
+        {
+            // Kích hoạt thủ tục phê duyệt kết nối
+            NetworkManager.Singleton.ConnectionApprovalCallback = ApprovalCheck;
+        }
     }
 
     private void ApprovalCheck(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
     {
-        // 1. Server đọc dữ liệu gửi lên từ Client (SelectedIndex)
-        string payload = Encoding.ASCII.GetString(request.Payload);
-        int characterIndex = int.Parse(payload);
-
-        // 2. Thiết lập phản hồi
+        // 1. Phê duyệt cho vào phòng
         response.Approved = true;
         response.CreatePlayerObject = true;
 
-        // 3. Chọn Prefab dựa trên Index
-        // Chúng ta lấy ID của Prefab để báo cho máy chủ tạo ra
-        response.PlayerPrefabHash = null; // Mặc định
-
-        // Cách thủ công để gán Prefab cho từng người chơi
-        if (characterIndex >= 0 && characterIndex < playerPrefabs.Length)
+        // 2. Đọc Payload (Lựa chọn nhân vật 0 hoặc 1)
+        int characterIndex = 0;
+        try
         {
-            // Tìm kiếm Prefab trong danh sách NetworkManager
-            // (Trong bản Netcode mới, ta có thể set trực tiếp Prefab cho mỗi Connection)
+            string payload = Encoding.ASCII.GetString(request.Payload);
+            int.TryParse(payload, out characterIndex);
+        }
+        catch
+        {
+            characterIndex = 0; // Mặc định nếu lỗi
         }
 
-        // Gán vị trí xuất hiện cho người chơi
-        response.Position = new Vector3(Random.Range(-5, 5), 2, Random.Range(-5, 5));
-        response.Rotation = Quaternion.identity;
+        // 3. Lấy đúng nhân vật từ danh sách Network Prefabs List
+        var prefabList = NetworkManager.Singleton.NetworkConfig.Prefabs.Prefabs;
+        if (characterIndex >= 0 && characterIndex < prefabList.Count)
+        {
+            response.PlayerPrefabHash = prefabList[characterIndex].SourcePrefabGlobalObjectIdHash;
+        }
+
+        // 4. Thiết lập vị trí Spawn
+        if (spawnPoint != null)
+        {
+            // Cộng thêm chút ngẫu nhiên để 4 người không dính vào nhau
+            float randomX = Random.Range(-1.5f, 1.5f);
+            float randomZ = Random.Range(-1.5f, 1.5f);
+            response.Position = spawnPoint.position + new Vector3(randomX, 0, randomZ);
+            response.Rotation = spawnPoint.rotation;
+        }
+        else
+        {
+            response.Position = new Vector3(0, 2, 0); // Vị trí dự phòng
+            response.Rotation = Quaternion.identity;
+        }
+
+        Debug.Log($"[Server] Đã phê duyệt Player với nhân vật số: {characterIndex}");
     }
 }
