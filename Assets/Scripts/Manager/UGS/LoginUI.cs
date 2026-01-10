@@ -1,17 +1,18 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class LoginUI : MonoBehaviour
 {
     [SerializeField] private Button unityLinkButton;
+    [SerializeField] private Button logOutBtn;
 
     private AccountManager accountManager;
 
     private void Awake()
     {
         accountManager = new AccountManager();
-        unityLinkButton.gameObject.SetActive(false);
     }
 
     private void OnEnable()
@@ -63,11 +64,31 @@ public class LoginUI : MonoBehaviour
             Debug.Log("Login with Unity DONE");
 
             RefreshUI();
+            SceneManager.LoadSceneAsync("Main Menu");
+
         }
         catch (Exception e)
         {
             Debug.LogError(e);
             unityLinkButton.interactable = true;
+        }
+    }
+
+    public async void OnLogoutUnity()
+    {
+        logOutBtn.interactable = false;
+
+        try
+        {
+            await AuthManager.Instance.SignOutAysnc();
+            Debug.Log("Logout DONE");
+
+            RefreshUI();
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e);
+            logOutBtn.interactable = true;
         }
     }
 }

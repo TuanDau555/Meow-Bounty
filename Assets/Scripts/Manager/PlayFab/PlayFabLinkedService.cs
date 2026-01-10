@@ -30,4 +30,27 @@ public static class PlayFabLoginService
             }
         );
     }
+
+    public static void LoginWihUnity(Action onSuccess, Action<string> onError)
+    {
+        var request = new LoginWithCustomIDRequest
+        {
+          TitleId = PlayFabSettings.TitleId,
+          CreateAccount = false  
+        };
+
+        PlayFabClientAPI.LoginWithCustomID(request,
+            result =>
+            {
+                Debug.Log("PlayFab linked Success");
+                AuthManager.Instance.MarkReady();
+                onSuccess?.Invoke();  
+            },
+            error =>
+            {
+                Debug.LogError(error.GenerateErrorReport());
+                onError?.Invoke(error.ErrorMessage);
+            }
+        );
+    }
 }

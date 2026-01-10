@@ -46,11 +46,6 @@ public class AuthManager : SingletonPersistent<AuthManager>
 
             AuthenticationService.Instance.SignedIn += HandleSignedIn;
 
-            // Not yet Authenticate, sign in Anynomously first
-            if (!AuthenticationService.Instance.IsSignedIn)
-            {
-                await AuthenticationService.Instance.SignInAnonymouslyAsync();
-            }
         }
         catch (Exception e)
         {
@@ -58,7 +53,28 @@ public class AuthManager : SingletonPersistent<AuthManager>
             Debug.LogError($"Auth Init Failed: {e}");
         }
     }
+    public async Task SignedInGuestAccount()
+    {
+        try
+        {    
+            // Not yet Authenticate, sign in Anynomously first
+            if (!AuthenticationService.Instance.IsSignedIn)
+            {
+                await AuthenticationService.Instance.SignInAnonymouslyAsync();
+            }
+        }
+        catch (AuthenticationException e)
+        {
+            Debug.LogError($"Signed In Guest failed: {e}");
+        }
 
+        catch (RequestFailedException e)
+        {
+            Debug.LogError($"Request failed: {e}");
+        }
+
+    }
+    #endregion
     #region Unity Auth
     public async Task SignedInOrLinkWithUnityAsyc(string accessToken)
     {
@@ -80,6 +96,11 @@ public class AuthManager : SingletonPersistent<AuthManager>
                 Debug.Log("Unity account Linked successfully");
                 return;
             }
+            else
+            {
+                Debug.LogWarning("Has already link with Unity");
+            }
+            HasUnityId();
         }
 
         catch (AuthenticationException e)
@@ -95,7 +116,7 @@ public class AuthManager : SingletonPersistent<AuthManager>
 
     private bool HasUnityId()
     {
-        return hasUnityId = (AuthenticationService.Instance.PlayerInfo.GetUnityId() != null);
+        return hasUnityId = AuthenticationService.Instance.PlayerInfo.GetUnityId() != null;
     }
     #endregion
 
@@ -111,6 +132,7 @@ public class AuthManager : SingletonPersistent<AuthManager>
     }
     #endregion
 
+    #region Ultils
     public async Task RetryAuthAsync()
     {
         if(State == AuthState.Initializing)
