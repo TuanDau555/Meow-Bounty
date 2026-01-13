@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using TMPro;
+using Unity.Services.Authentication;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
@@ -33,6 +34,12 @@ public class LobbyListView : MonoBehaviour
     [SerializeField] private TextMeshProUGUI roomNameText;
     [SerializeField] private TextMeshProUGUI roomCodeText;
     [SerializeField] private Button leaveRoomBtn;
+    
+    [Tooltip("Only visualize for the host")]
+    [SerializeField] private Button startGameBtn;
+
+    [Tooltip("Don't show this button for the host")]
+    [SerializeField] private Button readyBtn;
 
     private IGameLobbyService _gameLobbyService;
     private IHostAuthority _hostAuthority;
@@ -54,6 +61,7 @@ public class LobbyListView : MonoBehaviour
         refreshBtn.onClick.AddListener(OnRefreshClicked);
         createRoomBtn.onClick.AddListener(OnCreateClicked);
         leaveRoomBtn.onClick.AddListener(OnLeaveRoomClicked);
+        readyBtn.onClick.AddListener(OnReadyClicked);
     }
 
     private void OnDisable()
@@ -61,6 +69,7 @@ public class LobbyListView : MonoBehaviour
         refreshBtn.onClick.RemoveListener(OnRefreshClicked);
         createRoomBtn.onClick.RemoveListener(OnCreateClicked);
         leaveRoomBtn.onClick.RemoveListener(OnLeaveRoomClicked);
+        readyBtn.onClick.RemoveListener(OnReadyClicked);
 
         if (_isBound)
         {
@@ -129,6 +138,20 @@ public class LobbyListView : MonoBehaviour
         RenderPlayerList(lobby);
     }
 
+    private bool AreAllMembersReady(LobbyData lobby)
+    {
+        if(lobby == null) return false;
+
+        foreach(var player in lobby.Players)
+        {
+            if(player.isHost) continue;
+
+            if(!player.isReady) return false;
+        }
+        
+        return true;
+    }
+
     private void RenderPlayerList(LobbyData lobby)
     {
         // Clear all old player data
@@ -191,6 +214,19 @@ public class LobbyListView : MonoBehaviour
         await LeaveRoom();
     }
 
+    private async void OnReadyClicked()
+    {
+        var lobby = ServiceLocator.GameLobbyService;
+        var myId = AuthenticationService.Instance.PlayerId; // Id of the player that is clicked ready
+
+        bool isReady = lobby.CurrentLobby.GetPLayer(myId).isReady;
+
+        Debug.Log($"Player {myId} is ready");
+
+        await lobby.SetPlayerReadyAsync(myId, !isReady);
+
+    }
+
     //TODO: JOIN ROOM BY CODE BUTTOn
     // private async Task OnJoinByCodeClicked()
     // {
@@ -198,11 +234,13 @@ public class LobbyListView : MonoBehaviour
     // }
     #endregion
     
-    #region Ultil
+    #region Lobby Updated
     private void OnLocalLobbyUpdated(object sender, LobbyData lobby)
     {
         ClearLobbyList();
         ShowRoom(lobby);
+
+        UpdateStartGameButton(lobby);
     }
 
     private void OnLobbyLeft(object sender, EventArgs e)
@@ -212,6 +250,31 @@ public class LobbyListView : MonoBehaviour
         lobbyPanel.SetActive(true);
     }
 
+    /// <summary>
+    /// Show start Btn to host and ready btn to memeber
+    /// </summary>
+    /// <param name="lobby">Current Lobby</param>
+    private void UpdateStartGameButton(LobbyData lobby)
+    {
+        bool isLocalReady = AreAllMembersReady(lobby);
+        
+        // if not host
+        if (!_gameLobbyService.HostAuthority.IsHost)
+        {
+            readyBtn.gameObject.SetActive(true);
+            startGameBtn.gameObject.SetActive(false);
+            leaveRoomBtn.interactable = !isLocalReady;
+            return;
+        }
+        
+
+        startGameBtn.gameObject.SetActive(true);
+
+        startGameBtn.interactable = isLocalReady;
+    }
+    #endregion
+
+    #region Utils
     private void ClearLobbyList()
     {
         foreach(Transform child in roomInfoContent.transform)
