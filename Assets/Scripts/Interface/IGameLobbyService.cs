@@ -25,6 +25,7 @@ public interface IGameLobbyService
     /// <returns>Room info list</returns>
     Task<List<LobbyInfoData>> QueryRoomsAsync();
     Task LeaveLobbyAsync();
+    Task SetPlayerReadyAsync(string playerId, bool isReady);
     Task KickPlayerAsync(string playerId);
 
     /// <summary>
@@ -39,10 +40,24 @@ public interface IGameLobbyService
     /// <returns>data to server</returns>
     Task UpdatePlayerCharacterAsync(string playerId, string characterId);
 
+    /// <summary>
+    /// Start keep room alive
+    /// </summary>
     void StartHeartbeat();
+
+    /// <summary>
+    /// Stop keep room alive
+    /// </summary>
     void StopHeartbeat();
 
+    /// <summary>
+    /// Refresh player in room every amount of time  
+    /// </summary>
     void StartLobbyPolling();
+
+    /// <summary>
+    /// Stop refresh player in room
+    /// </summary>
     void StopLobbyPolling();
 
     /// <summary>

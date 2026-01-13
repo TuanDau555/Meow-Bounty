@@ -194,7 +194,9 @@ public class GameLobbyService : IGameLobbyService
             Debug.LogError(e);
         }
     }
+    #endregion
 
+    #region Room Interaction
     public async Task LeaveLobbyAsync()
     {
         try
@@ -220,9 +222,39 @@ public class GameLobbyService : IGameLobbyService
             Debug.LogError(e);
         }
     }
+
+    public async Task SetPlayerReadyAsync(string playerId, bool isReady)
+    {
+        if(_ugsLobby == null) return;
+
+        try
+        {
+            await LobbyService.Instance.UpdatePlayerAsync(
+                _ugsLobby.Id,
+                playerId,
+                new UpdatePlayerOptions
+                {
+                    Data = new Dictionary<string, PlayerDataObject>
+                    {
+                        {
+                            LobbyKeys.PLAYER_READY,
+                            new PlayerDataObject(
+                                PlayerDataObject.VisibilityOptions.Public,
+                                isReady.ToString()
+                            )
+                        }
+                    }
+                }
+            );
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.LogError($"Set Ready Failed {e}");
+        }
+    }
     #endregion
 
-    #region Lobby Polling
+    #region Lobby Hearbeat
     public void StartHeartbeat()
     {
         StopHeartbeat(); // Stop the old heartbeat to prevent conflict
@@ -260,7 +292,9 @@ public class GameLobbyService : IGameLobbyService
         _heartbeatCTS?.Cancel();
         _heartbeatCTS = null;
     }
+    #endregion
 
+    #region Lobby Polling
     private async Task PollLobbyLoop(CancellationToken token)
     {
         while (!token.IsCancellationRequested)
@@ -430,6 +464,14 @@ public class GameLobbyService : IGameLobbyService
                         PlayerDataObject.VisibilityOptions.Public,
                         profileService.PlayerData.equipedCharacter
                     )
+                },
+                {
+                    // State of the player
+                    LobbyKeys.PLAYER_READY,
+                    new PlayerDataObject(
+                        PlayerDataObject.VisibilityOptions.Public,
+                        "false" // not ready at default when they join room
+                    )
                 }
             }
         };
@@ -447,7 +489,9 @@ public class GameLobbyService : IGameLobbyService
         
         OnLocalLobbyUpdated?.Invoke(this, CurrentLobby);
     }
+    #endregion
 
+    #region  Ultils
     /// <summary>
     /// Clear all data when host left
     /// </summary>
@@ -507,7 +551,13 @@ public class GameLobbyService : IGameLobbyService
                                 ? charId.Value 
                                 : "Cat 01",
 
-               isHost = player.Id == ugsLobby.HostId
+               isHost = player.Id == ugsLobby.HostId,
+ 
+               isReady = player.Data.
+                            TryGetValue(
+                                LobbyKeys.PLAYER_READY, // if key noy exists return false
+                                out var readyValue
+                            ) && bool.Parse(readyValue.Value)
             });
         }
 
