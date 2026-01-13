@@ -18,6 +18,6 @@ public class GameInit : MonoBehaviour
        
         PlayFabLoginService.LinkedWithUnityPlayerId(playerId);
 
-        SceneManager.LoadSceneAsync("Main Menu");
+        SceneManager.LoadSceneAsync("Main Menu Tuan");
     }
 }
