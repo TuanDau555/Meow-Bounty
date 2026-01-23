@@ -197,6 +197,36 @@ public class GameLobbyService : IGameLobbyService
     #endregion
 
     #region Room Interaction
+    public async Task StartGameAsync()
+    {
+        if(!_hostAuthority.IsHost) return;
+
+        try
+        {            
+            await LobbyService.Instance.UpdateLobbyAsync(
+                _ugsLobby.Id,
+                new UpdateLobbyOptions
+                {
+                    Data = new Dictionary<string, DataObject>
+                    {
+                        {
+                            LobbyKeys.LOBBY_STATE,
+                            new DataObject(
+                                DataObject.VisibilityOptions.Public,
+                                LobbyState.InGame.ToString()
+                            )
+                        }
+                    }
+                }
+            );
+            Debug.Log("LobbyState updated to InGame (server call sent)");
+        }
+        catch(LobbyServiceException e)
+        {
+            Debug.LogError(e);
+        }
+    }
+
     public async Task LeaveLobbyAsync()
     {
         try
@@ -206,11 +236,21 @@ public class GameLobbyService : IGameLobbyService
             StopLobbyPolling();
             StopHeartbeat();
 
-            // Remove from the server
-            await LobbyService.Instance.RemovePlayerAsync(
-                _ugsLobby.Id, 
-                AuthenticationService.Instance.PlayerId
-            );
+            // Member leave room if there is no room host
+            if (_hostAuthority.IsHost)
+            {
+                Debug.Log("Host leave, delete lobby");
+
+                await LobbyService.Instance.DeleteLobbyAsync(_ugsLobby.Id);
+            }
+            else
+            {
+                // Remove from the server
+                await LobbyService.Instance.RemovePlayerAsync(
+                    _ugsLobby.Id, 
+                    AuthenticationService.Instance.PlayerId
+                );
+            }
 
 
             _ugsLobby = null;
@@ -484,6 +524,8 @@ public class GameLobbyService : IGameLobbyService
     {
         _ugsLobby = ugsLobby;
         CurrentLobby = MapToLobbyData(ugsLobby);
+
+        Debug.Log($"Lobby state changed to: {CurrentLobby.lobbyState}");
 
         _hostAuthority.UpdateHost(ugsLobby.HostId);
         
