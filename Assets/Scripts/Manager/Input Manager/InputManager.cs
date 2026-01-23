@@ -5,7 +5,7 @@ public class InputManager : Singleton<InputManager>
     private InputSystem inputSystem;
 
     #region Excute
-    public override void Awake()
+    protected override void Awake()
     {
         base.Awake();
         inputSystem = new InputSystem();

@@ -11,4 +11,7 @@ public static class LobbyKeys
 
     // Lobby Data
     public const string LOBBY_STATE = "state";
+
+    // Relay
+    public const string RELAY_JOIN_CODE = "RELAY_JOIN_CODE";
 }

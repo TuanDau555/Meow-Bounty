@@ -15,7 +15,7 @@ public class PlayFabManager : SingletonPersistent<PlayFabManager>
     #endregion
     
     #region Execute
-    public override void Awake()
+    protected override void Awake()
     {
         base.Awake();
         

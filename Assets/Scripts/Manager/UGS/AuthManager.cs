@@ -19,7 +19,7 @@ public class AuthManager : SingletonPersistent<AuthManager>
     #endregion
 
     #region Excute
-    public override async void Awake()
+    protected override async void Awake()
     {
         base.Awake();
 
