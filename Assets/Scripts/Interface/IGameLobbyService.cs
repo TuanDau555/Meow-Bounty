@@ -26,6 +26,7 @@ public interface IGameLobbyService
     Task<List<LobbyInfoData>> QueryRoomsAsync();
     Task LeaveLobbyAsync();
     Task SetPlayerReadyAsync(string playerId, bool isReady);
+    Task StartGameAsync();
     Task KickPlayerAsync(string playerId);
 
     /// <summary>

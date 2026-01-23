@@ -62,6 +62,7 @@ public class LobbyListView : MonoBehaviour
         createRoomBtn.onClick.AddListener(OnCreateClicked);
         leaveRoomBtn.onClick.AddListener(OnLeaveRoomClicked);
         readyBtn.onClick.AddListener(OnReadyClicked);
+        startGameBtn.onClick.AddListener(OnStartGameClicked);
     }
 
     private void OnDisable()
@@ -70,6 +71,7 @@ public class LobbyListView : MonoBehaviour
         createRoomBtn.onClick.RemoveListener(OnCreateClicked);
         leaveRoomBtn.onClick.RemoveListener(OnLeaveRoomClicked);
         readyBtn.onClick.RemoveListener(OnReadyClicked);
+        startGameBtn.onClick.RemoveListener(OnStartGameClicked);
 
         if (_isBound)
         {
@@ -223,8 +225,14 @@ public class LobbyListView : MonoBehaviour
 
         Debug.Log($"Player {myId} is ready");
 
-        await lobby.SetPlayerReadyAsync(myId, !isReady);
+        //TODO: Ready UI pop up
 
+        await lobby.SetPlayerReadyAsync(myId, !isReady);
+    }
+
+    private async void OnStartGameClicked()
+    {
+        await _gameLobbyService.StartGameAsync();
     }
 
     //TODO: JOIN ROOM BY CODE BUTTOn
@@ -241,6 +249,12 @@ public class LobbyListView : MonoBehaviour
         ShowRoom(lobby);
 
         UpdateStartGameButton(lobby);
+        if (lobby.lobbyState == LobbyState.InGame)
+        {
+            Debug.Log("IN GAME STATE REACHED");
+            // Tạm thời chỉ log
+            // Scene load sẽ làm sau
+        }
     }
 
     private void OnLobbyLeft(object sender, EventArgs e)
