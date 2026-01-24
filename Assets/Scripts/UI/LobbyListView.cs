@@ -252,8 +252,6 @@ public class LobbyListView : MonoBehaviour
         if (lobby.lobbyState == LobbyState.InGame)
         {
             Debug.Log("IN GAME STATE REACHED");
-            // Tạm thời chỉ log
-            // Scene load sẽ làm sau
         }
     }
 

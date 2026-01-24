@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Unity.Netcode;
 using Unity.Services.Authentication;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Manage all the lobby system
@@ -16,6 +18,8 @@ public class GameLobbyService : IGameLobbyService
     #region Parameter
     private const float k_pollInterval = 1.5f;
     private const int k_hearbeatInterval = 15000; // 15s
+
+    private bool _relayPrepared = false;
     
     // Room event
     public event EventHandler<LobbyData> OnLocalLobbyUpdated;
@@ -203,6 +207,9 @@ public class GameLobbyService : IGameLobbyService
 
         try
         {            
+            string joinCode = await RelayConnectionManager.Instance.SetUpAsHostRelayAsync(CurrentLobby.maxPlayer);
+        
+            // We need to make sure that member join the relay before start load scene
             await LobbyService.Instance.UpdateLobbyAsync(
                 _ugsLobby.Id,
                 new UpdateLobbyOptions
@@ -213,13 +220,21 @@ public class GameLobbyService : IGameLobbyService
                             LobbyKeys.LOBBY_STATE,
                             new DataObject(
                                 DataObject.VisibilityOptions.Public,
-                                LobbyState.InGame.ToString()
+                                LobbyState.Starting.ToString()
                             )
+                        },
+
+                        {
+                            LobbyKeys.RELAY_JOIN_CODE,
+                            new DataObject(
+                                DataObject.VisibilityOptions.Member,
+                                joinCode
+                            )    
                         }
                     }
                 }
             );
-            Debug.Log("LobbyState updated to InGame (server call sent)");
+            _ = HostCountDownAndStartGame();
         }
         catch(LobbyServiceException e)
         {
@@ -365,8 +380,19 @@ public class GameLobbyService : IGameLobbyService
                 }
 
                 _ugsLobby = latestLobby;
-
                 UpdateLocalLobby(_ugsLobby);
+
+                if(CurrentLobby.lobbyState == LobbyState.Starting)
+                {
+                    _ = HandleGameStarting();
+                }
+
+                if(CurrentLobby.lobbyState == LobbyState.InGame)
+                {
+                    HandleGameStarted();
+                    return;
+                }
+                
                 OnLobbyUpdated?.Invoke(this, _ugsLobby);
             }
             catch (LobbyServiceException e)
@@ -482,7 +508,7 @@ public class GameLobbyService : IGameLobbyService
     }
     #endregion
 
-    #region Local Helper 
+    #region Local Lobby 
     private Player CreateLocalPlayer()
     {
         return new Player
@@ -533,7 +559,7 @@ public class GameLobbyService : IGameLobbyService
     }
     #endregion
 
-    #region  Ultils
+    #region Room Handle
     /// <summary>
     /// Clear all data when host left
     /// </summary>
@@ -546,7 +572,8 @@ public class GameLobbyService : IGameLobbyService
 
         _ugsLobby = null;
         CurrentLobby = null;
-
+        _relayPrepared = false;
+        
         OnLobbyLeft?.Invoke(this, EventArgs.Empty);
     }
 
@@ -560,10 +587,146 @@ public class GameLobbyService : IGameLobbyService
 
         _ugsLobby = null;
         CurrentLobby = null;
-
+        _relayPrepared = false;
+        
         OnLobbyLeft?.Invoke(this, EventArgs.Empty);
     }
+    #endregion
 
+    #region Start Game Handle
+    /// <summary>
+    /// Start count down before load scene
+    /// </summary>
+    private async Task HostCountDownAndStartGame()
+    {
+        if(!_hostAuthority.IsHost) return;
+        
+        int countDown = 5;
+
+        while(countDown > 0)
+        {
+            Debug.Log($"Game starts in: {countDown}");
+            await Task.Delay(1000); // 1s
+            countDown--;
+        }
+
+        // Wait for Network Manager to starting a bit
+        NetworkManager.Singleton.OnServerStarted += HandleServerStarted;
+
+        RelayConnectionManager.Instance.StartHost();
+        
+        // Set InGame state when count down done
+        await LobbyService.Instance.UpdateLobbyAsync(
+            _ugsLobby.Id,
+            new UpdateLobbyOptions
+            {
+                Data = new Dictionary<string, DataObject>
+                {
+                    {
+                        LobbyKeys.LOBBY_STATE,
+                        new DataObject(
+                            DataObject.VisibilityOptions.Public,
+                            LobbyState.InGame.ToString()
+                        )
+                    }
+                }
+            }
+        );
+
+    }
+
+    private void HandleServerStarted()
+    {
+        Debug.Log("Server started → loading scene");
+
+        // NetworkManager.Singleton.SceneManager.LoadScene("Lv1", LoadSceneMode.Single);
+        SceneLoader.LoadNetworkScene("Lv1");
+
+        NetworkManager.Singleton.OnServerStarted -= HandleServerStarted;
+    }
+
+    private async Task HandleGameStarting()
+    {
+        if(_relayPrepared) return;
+
+        if(_hostAuthority.IsHost) return;
+
+        Debug.Log("Game Starting, prepare relay");
+
+        bool hasRelayData = _ugsLobby
+                            .Data
+                            .TryGetValue(
+                                LobbyKeys.RELAY_JOIN_CODE,
+                                out var relayData
+                            );
+        
+        if(hasRelayData)
+        {
+            string joinCode = relayData.Value;
+            bool success = await RelayConnectionManager.Instance.SetUpAsClientAsync(joinCode);
+
+            RegisterClientConnected();
+
+            if (success)
+            {
+                RelayConnectionManager.Instance.StartClient();
+                _relayPrepared = true;
+                Debug.Log("Relay ready, waiting for InGame State");
+            }
+
+            // // Wait for client to connect
+            // NetworkManager.Singleton.OnClientConnectedCallback += clientId =>
+            // {
+            //     if(clientId == NetworkManager.Singleton.LocalClientId)
+            //     {
+            //         Debug.Log("Client connected successfully, ready for scene load");
+            //     }  
+            //     else
+            //     {
+            //         Debug.LogError("Client failed to connect in time");
+            //     }
+            // };
+        }
+    }
+
+    private void HandleGameStarted()
+    {
+        Debug.Log("Game started, scene should load automatically via NetworkManager");
+
+        // Wait a moment for the scene to finish loading
+        _ = DelayedCleanup();
+    }
+    private async Task DelayedCleanup()
+    {
+        await Task.Delay(2000);
+        StopLobbyPolling();
+        StopHeartbeat();
+    }
+
+    /// <summary>
+    /// Connected Callback register
+    /// </summary>
+    private void RegisterClientConnected()
+    {
+        NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnectedCallback;
+        NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnectedCallback;
+    }
+    
+    private void OnClientConnectedCallback(ulong clientId)
+    {
+        if(clientId == NetworkManager.Singleton.LocalClientId)
+        {
+            Debug.Log("Client connected successfully");
+        }
+        else
+        {
+            Debug.LogError("Client failed to connect in time");
+        }
+    }
+    
+    #endregion
+
+    #region Map Data
     public LobbyData MapToLobbyData(Lobby ugsLobby)
     {
         var data = new LobbyData
@@ -605,5 +768,6 @@ public class GameLobbyService : IGameLobbyService
 
         return data;
     }
+    
     #endregion
 }

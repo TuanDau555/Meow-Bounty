@@ -64,7 +64,7 @@ public class LoginUI : MonoBehaviour
             Debug.Log("Login with Unity DONE");
 
             RefreshUI();
-            SceneManager.LoadSceneAsync("Main Menu");
+            SceneManager.LoadSceneAsync("Main Menu Tuan");
 
         }
         catch (Exception e)
