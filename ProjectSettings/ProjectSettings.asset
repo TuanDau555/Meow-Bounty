@@ -12,7 +12,7 @@ PlayerSettings:
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: DefaultCompany
+  companyName: Chick Studio
   productName: Meow Bounty
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
@@ -918,7 +918,7 @@ PlayerSettings:
   hmiLogStartupTiming: 0
   hmiCpuConfiguration: 
   apiCompatibilityLevel: 6
-  activeInputHandler: 0
+  activeInputHandler: 2
   windowsGamepadBackendHint: 0
   cloudProjectId: c05c6c19-e1be-4579-b971-3c8f20042e97
   framebufferDepthMemorylessMode: 0
