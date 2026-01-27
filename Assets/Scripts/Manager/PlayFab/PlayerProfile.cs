@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public static class PlayerProfile
 {
-    private const string DEFAULT_CHARACTER_ID = "cat_01";
+    private const string DEFAULT_CHARACTER_ID = "Cat_01";
 
     // First time In the game
     public static PlayerData Create()

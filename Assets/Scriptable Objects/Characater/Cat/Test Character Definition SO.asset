@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89af1531afb7ad247a6ff0a453d29942, type: 3}
   m_Name: Test Character Definition SO
   m_EditorClassIdentifier: 
-  id: Test cat 01
-  displayName: 
+  id: Cat_01
+  displayName: Cat
   icon: {fileID: 0}
-  characterPrefab: {fileID: 0}
+  characterPrefab: {fileID: 8271282784123907453, guid: d6310d6cfd2a6094b81b9f5c6450a080,
+    type: 3}
