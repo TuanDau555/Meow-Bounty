@@ -7,5 +7,5 @@ public class CharacterDefinitionSO : ScriptableObject
     public string id;
     public string displayName;
     public Sprite icon;
-    public NetworkObject characterPrefab;
+    public Transform characterPrefab;
 }
