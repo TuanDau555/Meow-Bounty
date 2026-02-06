@@ -15,5 +15,16 @@ MonoBehaviour:
   id: Cat_01
   displayName: Cat
   icon: {fileID: 0}
-  characterPrefab: {fileID: 8271282784123907453, guid: d6310d6cfd2a6094b81b9f5c6450a080,
+  characterPrefab: {fileID: 8271282784123907453, guid: 1a67612e3bcad7a4eb3e43b2a9672d5a,
     type: 3}
+  characterStats:
+    HP: 10
+    defend: 2.51
+    stamina: 0
+    useStamina: 0
+    staminaUseMultiplier: 5
+    timeBeforeStaminaRegenStarts: 3
+    staminaIncrement: 2
+    staminaTimeIncrement: 0.1
+    walkSpeed: 5
+    sprintSpeed: 10
