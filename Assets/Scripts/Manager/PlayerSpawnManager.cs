@@ -87,7 +87,7 @@ public class PlayerSpawnManager : SingletonNetwork<NetworkBehaviour>
                 
                 if(def == null)
                 {
-                    Debug.LogError($"❌ Character definition is NULL for ID: {p.characterId}");
+                    Debug.LogError($"Character definition is NULL for ID: {p.characterId}");
                     Debug.LogError($"Available characters in database:");
                     characterDatabase.GetAllCharacter();
                     return;
@@ -97,7 +97,7 @@ public class PlayerSpawnManager : SingletonNetwork<NetworkBehaviour>
                 
                 if(def.characterPrefab == null)
                 {
-                    Debug.LogError($"❌ Character prefab is NULL for {p.characterId}");
+                    Debug.LogError($"Character prefab is NULL for {p.characterId}");
                     return;
                 }
                 
