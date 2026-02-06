@@ -17,15 +17,41 @@ MonoBehaviour:
   description: 
   preview: {fileID: 8011347036882466553}
   dependencies:
-  - dependency: {fileID: 3998615307453508779, guid: d6310d6cfd2a6094b81b9f5c6450a080,
-      type: 3}
-    instantiationMode: 0
   - dependency: {fileID: 11400000, guid: ca25b68fd5ca793469d147af4004f9bb, type: 2}
     instantiationMode: 1
+  - dependency: {fileID: 7400000, guid: a583f14587592cb46b065d658945e100, type: 2}
+    instantiationMode: 0
+  - dependency: {fileID: 3998615307453508779, guid: 1a67612e3bcad7a4eb3e43b2a9672d5a,
+      type: 3}
+    instantiationMode: 0
+  - dependency: {fileID: 7400000, guid: ac93e259774482d4e92a336f6ab560a3, type: 2}
+    instantiationMode: 0
+  - dependency: {fileID: 7400000, guid: 44e63de49f8573b4db564d8835899e18, type: 2}
+    instantiationMode: 0
+  - dependency: {fileID: 7400000, guid: d56d1d66520e37747b3caf3fed2ce907, type: 2}
+    instantiationMode: 0
+  - dependency: {fileID: 7400000, guid: 19bfa66be7d44d44fab9e2869f359e2e, type: 2}
+    instantiationMode: 0
+  - dependency: {fileID: 7400000, guid: 3c64d8c4f40d56b4ea6e27140227a6e3, type: 2}
+    instantiationMode: 0
+  - dependency: {fileID: 11400000, guid: 23c97283d6510604fb20ab3e01ecab44, type: 2}
+    instantiationMode: 1
+  - dependency: {fileID: 9100000, guid: 3571b426550c2ef4b9869334dcda4f12, type: 2}
+    instantiationMode: 0
   - dependency: {fileID: 11400000, guid: 7d7bb7c1409459d45a2a6a7e3436c137, type: 2}
     instantiationMode: 1
+  - dependency: {fileID: 919132149155446097, guid: a22434b1154f12d47a6123a8042daab7,
+      type: 3}
+    instantiationMode: 0
+  - dependency: {fileID: 7400000, guid: f96817ae4df635746a15fc43461c86dd, type: 2}
+    instantiationMode: 0
   - dependency: {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
     instantiationMode: 1
+  - dependency: {fileID: 2800000, guid: 5f2a108eb023faf43a809979fd3d38f2, type: 3}
+    instantiationMode: 1
+  - dependency: {fileID: 3261115620095542069, guid: 880311743cbd73b43a82ec0d60bd5979,
+      type: 3}
+    instantiationMode: 0
   templatePipeline: {fileID: 0}
   badge: {fileID: 0}
   addToDefaults: 1
