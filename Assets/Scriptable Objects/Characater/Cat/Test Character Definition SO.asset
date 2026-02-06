@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89af1531afb7ad247a6ff0a453d29942, type: 3}
+  m_Name: Test Character Definition SO
+  m_EditorClassIdentifier: 
+  id: Cat_01
+  displayName: Cat
+  icon: {fileID: 0}
+  characterPrefab: {fileID: 8271282784123907453, guid: 1a67612e3bcad7a4eb3e43b2a9672d5a,
+    type: 3}
+  characterStats:
+    HP: 10
+    defend: 2.51
+    stamina: 0
+    useStamina: 0
+    staminaUseMultiplier: 5
+    timeBeforeStaminaRegenStarts: 3
+    staminaIncrement: 2
+    staminaTimeIncrement: 0.1
+    walkSpeed: 5
+    sprintSpeed: 10
