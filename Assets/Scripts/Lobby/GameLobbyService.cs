@@ -610,6 +610,8 @@ public class GameLobbyService : IGameLobbyService
             countDown--;
         }
 
+        StopLobbyPolling();
+        
         // Wait for Network Manager to starting a bit
         NetworkManager.Singleton.OnServerStarted += HandleServerStarted;
 
@@ -633,6 +635,7 @@ public class GameLobbyService : IGameLobbyService
             }
         );
 
+        StopHeartbeat();
     }
 
     private void HandleServerStarted()
@@ -673,19 +676,6 @@ public class GameLobbyService : IGameLobbyService
                 _relayPrepared = true;
                 Debug.Log("Relay ready, waiting for InGame State");
             }
-
-            // // Wait for client to connect
-            // NetworkManager.Singleton.OnClientConnectedCallback += clientId =>
-            // {
-            //     if(clientId == NetworkManager.Singleton.LocalClientId)
-            //     {
-            //         Debug.Log("Client connected successfully, ready for scene load");
-            //     }  
-            //     else
-            //     {
-            //         Debug.LogError("Client failed to connect in time");
-            //     }
-            // };
         }
     }
 
@@ -754,7 +744,7 @@ public class GameLobbyService : IGameLobbyService
                characterId = player.Data.
                             TryGetValue(LobbyKeys.CHARACTER_ID, out var charId) 
                                 ? charId.Value 
-                                : "Cat 01",
+                                : "Cat_01",
 
                isHost = player.Id == ugsLobby.HostId,
  
