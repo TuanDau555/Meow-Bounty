@@ -16,7 +16,9 @@ public class MainMenuView : MonoBehaviour
     #region Execute
     private void Start()
     {
-        profileService = new PlayerProfileService();
+        ServiceLocator.InitProFile();
+
+        profileService = ServiceLocator.ProfileService;
         hostAuthority = new HostAuthorityService(AuthenticationService.Instance);
         
         if(AuthManager.Instance.IsReady)
@@ -65,7 +67,7 @@ public class MainMenuView : MonoBehaviour
         // Because Lobby need player Id to create a room 
         if (ServiceLocator.GameLobbyService == null)
         {
-            ServiceLocator.InitLobby(profileService, hostAuthority);
+            ServiceLocator.InitLobby(hostAuthority);
             Debug.Log("GameLobbyService initialized after profile ready.");
         }
     }

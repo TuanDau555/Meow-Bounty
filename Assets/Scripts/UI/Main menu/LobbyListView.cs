@@ -263,7 +263,7 @@ public class LobbyListView : MonoBehaviour
     }
 
     /// <summary>
-    /// Show start Btn to host and ready btn to memeber
+    /// Show start Btn to host and ready btn to member
     /// </summary>
     /// <param name="lobby">Current Lobby</param>
     private void UpdateStartGameButton(LobbyData lobby)
