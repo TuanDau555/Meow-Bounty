@@ -12,7 +12,7 @@ public static class PlayerProfile
         {
             name = "New Player",
             ownedCharacter = new List<string> {DEFAULT_CHARACTER_ID},
-            equipedCharacter = DEFAULT_CHARACTER_ID
+            equippedCharacter = DEFAULT_CHARACTER_ID
         };
     }
 }
@@ -22,5 +22,5 @@ public class PlayerData
 {
     public string name;
     public List<string> ownedCharacter;
-    public string equipedCharacter;
+    public string equippedCharacter;
 }

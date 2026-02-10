@@ -1,4 +1,3 @@
-using Unity.Netcode;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Character/Definition")]
@@ -8,6 +7,9 @@ public class CharacterDefinitionSO : ScriptableObject
     public string displayName;
     public Sprite icon;
     public Transform characterPrefab;
+
+    [Tooltip("This is just empty prefab, just visual and animation no logic")]
+    public GameObject previewPrefab;
     public CharacterStats characterStats;
 
     [System.Serializable]
