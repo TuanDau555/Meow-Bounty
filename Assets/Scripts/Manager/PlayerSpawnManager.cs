@@ -3,12 +3,12 @@ using Unity.Netcode;
 using UnityEngine;
 public class PlayerSpawnManager : SingletonNetwork<NetworkBehaviour>
 {
-    #region Paramter    
+    #region Parameter    
     [SerializeField] private CharacterDatabaseSO characterDatabase;
 
     /// <summary>
-    /// Player spawn postion is random...
-    /// ... this is the center point to caulate random pos
+    /// Player spawn position is random...
+    /// ... this is the center point to calculate random pos
     /// </summary>
     [SerializeField] private Transform spawnCenter;
 
@@ -16,7 +16,7 @@ public class PlayerSpawnManager : SingletonNetwork<NetworkBehaviour>
     private float radius = 2f;
     #endregion
 
-    #region Excute
+    #region Execute
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
@@ -57,6 +57,12 @@ public class PlayerSpawnManager : SingletonNetwork<NetworkBehaviour>
 
     private void SpawnPlayers(ulong clientId)
     {   
+        if (_spawnPlayers.ContainsKey(clientId))
+        {
+            Debug.LogWarning($"Player already spawned for client {clientId}");
+            return;
+        }
+        
         if(!RelayConnectionManager.Instance._clientUgsMap.TryGetValue(clientId, out string ugsId))
         {
             Debug.LogError($"UGS Id not found for client {clientId}");
@@ -64,6 +70,10 @@ public class PlayerSpawnManager : SingletonNetwork<NetworkBehaviour>
         }
         
         Debug.Log($"UGS ID: {ugsId}");
+        
+        if (ServiceLocator.GameLobbyService.CurrentLobby.lobbyState != LobbyState.InGame)
+            return;
+
         
         var lobbyPlayers = ServiceLocator.GameLobbyService?.CurrentLobby?.Players;
         
