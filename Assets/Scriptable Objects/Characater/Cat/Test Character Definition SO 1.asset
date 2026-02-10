@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 89af1531afb7ad247a6ff0a453d29942, type: 3}
-  m_Name: Test Character Definition SO
+  m_Name: Test Character Definition SO 1
   m_EditorClassIdentifier: 
-  id: Cat_01
-  displayName: Cat
+  id: Cat_02
+  displayName: Cat Bomber
   icon: {fileID: 0}
-  characterPrefab: {fileID: 8271282784123907453, guid: 48d261bf65990634988e6c5a56c58d0e,
+  characterPrefab: {fileID: 8271282784123907453, guid: 741572d2cadd89041a8d9978c9ce2715,
     type: 3}
-  previewPrefab: {fileID: 8421418390401627055, guid: 9f15fc5975e702a41a91cc663ff3c132,
+  previewPrefab: {fileID: 3574605342309381048, guid: 8351b5b3b4eabca47a8d3120a3a40ff1,
     type: 3}
   characterStats:
     HP: 10
