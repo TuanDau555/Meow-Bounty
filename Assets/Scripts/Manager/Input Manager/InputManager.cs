@@ -23,7 +23,12 @@ public class InputManager : Singleton<InputManager>
     #endregion
     
     #region Input Method
+    
     public Vector2 GetPlayerMovement() => inputSystem.Player.Moving.ReadValue<Vector2>();
+
     public Vector2 GetMouseDelta() => inputSystem.Player.Look.ReadValue<Vector2>();
+
+    public bool IsFiringPressed() => inputSystem.Player.Fire.WasPressedThisFrame();
+    
     #endregion
 }
