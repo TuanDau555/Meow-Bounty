@@ -71,10 +71,6 @@ public class PlayerSpawnManager : SingletonNetwork<NetworkBehaviour>
         
         Debug.Log($"UGS ID: {ugsId}");
         
-        if (ServiceLocator.GameLobbyService.CurrentLobby.lobbyState != LobbyState.InGame)
-            return;
-
-        
         var lobbyPlayers = ServiceLocator.GameLobbyService?.CurrentLobby?.Players;
         
         if(lobbyPlayers == null)
