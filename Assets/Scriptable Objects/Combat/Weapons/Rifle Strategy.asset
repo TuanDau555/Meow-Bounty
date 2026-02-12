@@ -1,0 +1,15 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecddd2b460d2e6b44913910d42f12b56, type: 3}
+  m_Name: Rifle Strategy
+  m_EditorClassIdentifier: 
+  projectileStats: {fileID: 11400000, guid: 96b5ac0a84c851b4ea1ab0e8e6ae2014, type: 2}

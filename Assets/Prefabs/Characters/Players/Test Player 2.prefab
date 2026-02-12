@@ -377,6 +377,7 @@ MonoBehaviour:
   characterDefSO: {fileID: 11400000, guid: 7d7bb7c1409459d45a2a6a7e3436c137, type: 2}
   reconciliationCooldownTime: 1
   reconiliationThreshold: 0.05
+  reconciliationSmoothSpeed: 12
   extrapolationLimit: 0.5
   extrapolationMultiplier: 1.2
 --- !u!1 &8245427541525615215
