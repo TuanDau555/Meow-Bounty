@@ -10,17 +10,11 @@ public struct FireContext : INetworkSerializable
     public Vector3 direction; 
     public ulong ownerClientId; // who
 
-    public float damage;
-    public float range;
-
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {
         serializer.SerializeValue(ref origin);
         serializer.SerializeValue(ref direction);
-        serializer.SerializeValue(ref ownerClientId);
-        serializer.SerializeValue(ref damage);
-        serializer.SerializeValue(ref range);
-
+        serializer.SerializeValue(ref ownerClientId);;
     }
 }
 
