@@ -20,6 +20,10 @@ public class PlayerStatsSO : ScriptableObject
         [Tooltip("Is the limit that player can look up and down")]
         [Range(45, 90)]
         public float lookLimit;
+
+        [Tooltip("Is the limit that player can look up and down when player get knocked down")]
+        [Range(45, 60)]
+        public float lookLimitWhenDowned = 45f;
     }
 
     #endregion
