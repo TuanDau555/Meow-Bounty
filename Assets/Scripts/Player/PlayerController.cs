@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
+#region Payload
 public struct InputPayload : INetworkSerializable
 {
     public int tick;
@@ -34,7 +35,9 @@ public struct StatePayload : INetworkSerializable
         serializer.SerializeValue(ref velocity);
     }
 }
+#endregion
 
+#region Buffer
 public struct BufferState
 {
     public float serverTime;
@@ -42,6 +45,7 @@ public struct BufferState
     public Quaternion rotation;
     public Vector3 velocity;
 }
+#endregion
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : NetworkBehaviour
@@ -50,16 +54,16 @@ public class PlayerController : NetworkBehaviour
     
     [Header("Model Root")]
     [SerializeField] private Transform bodyRoot;
+
+    [Tooltip("Camera Root")]
     [SerializeField] private Transform headRoot;
 
     [Tooltip("Object the contain mesh and animator")]
     [SerializeField] private Transform visualRoot;
 
     [Space(10)]
-    [Header("Camera")]
-
-    [Tooltip("Camera Socket")]
-    [SerializeField] private Transform cameraTransform;
+    [Header("Animation")]
+    [SerializeField] private Animator animator;
 
     [Space(10)]
     [Header("Character Stats")]
@@ -74,13 +78,17 @@ public class PlayerController : NetworkBehaviour
     private float _lookYaw;
     private float _lookPitch;
     private float _mouseSen;
-    private float _mouseLimit;
+    private float _mouseLimitNormal;
+    private float _mouseLimnitWhenDowned;
     private float _walkSpeed;
     private float _sprintSpeed;
     private Vector3 _moveDirection;
+    private bool _isDowned;
+    private bool _isDead;
 
     // Netcode general
     private NetworkTimer _networkTimer;
+    private NetworkHealth _networkHealth;
     private const float k_tickRate = 60f; // 60 FPS
     private const int k_bufferSize = 1024;  
     private ClientNetworkTransform _clientNetworkTransform;
@@ -123,6 +131,13 @@ public class PlayerController : NetworkBehaviour
     private NetworkVariable<float> _netYaw = new(writePerm: NetworkVariableWritePermission.Owner);
     private NetworkVariable<float> _netPitch = new(writePerm: NetworkVariableWritePermission.Owner);
 
+    // Net varibles for animation
+    private NetworkVariable<float> _netMoveX = 
+        new NetworkVariable<float>(writePerm: NetworkVariableWritePermission.Owner);
+
+    private NetworkVariable<float> _netMoveY = 
+        new NetworkVariable<float>(writePerm: NetworkVariableWritePermission.Owner);
+
     #endregion
     
     #region Init
@@ -131,7 +146,8 @@ public class PlayerController : NetworkBehaviour
     {
         // Mouse Sen
         _mouseSen = defaultStats.lookStats.lookSensitive;
-        _mouseLimit = defaultStats.lookStats.lookLimit;
+        _mouseLimitNormal = defaultStats.lookStats.lookLimit;
+        _mouseLimnitWhenDowned = defaultStats.lookStats.lookLimitWhenDowned;
 
         // Move
         _walkSpeed = characterStats.characterStats.walkSpeed;
@@ -144,6 +160,18 @@ public class PlayerController : NetworkBehaviour
 
         // Network Timer
         _networkTimer = new NetworkTimer(k_tickRate);
+
+        // Network Health
+        _networkHealth = GetComponent<NetworkHealth>();
+        if(_networkHealth == null)
+        {
+            Debug.LogError($"Network component missing: {gameObject.name}");
+            return;
+        }
+
+        _networkHealth.OnDeath += HandleDeath;
+        _networkHealth.OnDowned += HandleDowned;
+        _networkHealth.OnRevived += HandleRevived;
 
         // Client Buffers
         clientStateBuffer = new CircularBuffer<StatePayload>(k_bufferSize);
@@ -181,6 +209,19 @@ public class PlayerController : NetworkBehaviour
 
     #region Execute
 
+    public override void OnNetworkDespawn()
+    {
+        if(_networkHealth != null)
+        {            
+            _networkHealth.OnDeath -= HandleDeath;
+            _networkHealth.OnDowned -= HandleDowned;
+            
+            _networkHealth.OnRevived -= HandleRevived;
+        }
+        
+        base.OnNetworkDespawn();
+    }
+
     private void Awake()
     {
         if(_playerController == null)
@@ -211,6 +252,8 @@ public class PlayerController : NetworkBehaviour
                 reconcilitationOffset -= correction;
                 _playerController.Move(correction);
             }
+
+            UpdateLocalAnimation();
         }
         else
         {
@@ -226,25 +269,30 @@ public class PlayerController : NetworkBehaviour
         {
             // Here we can implement client-side prediction and server reconciliation
 
-            if(IsOwner)
-                HandleClientTick();
+            if (IsOwner)
+            {
+                if(CanMove())
+                    HandleClientTick();
+            }
             
             // Host don't need to run tick it self anymore
             if(IsServer && !IsOwner)
-                HandleServerTick();
+            {
+                if(CanMove())
+                    HandleServerTick();
+            }
         }
 
         if (IsOwner)
         {
-            MouseInput(_mouseSen, _mouseLimit);
-
-            if (_lookPitch > 180) _lookPitch -= 360; // normalize
+            float limit = _isDowned ? _mouseLimnitWhenDowned : _mouseLimitNormal;
+            MouseInput(_mouseSen, limit);
 
             // Only send variable when mouse is moving
-            if (Mathf.Abs(_netYaw.Value - _lookYaw) > 0.1f)
+            if (Mathf.Abs(_netYaw.Value - _lookYaw) > 0.05f)
                 _netYaw.Value = _lookYaw;
 
-            if (Mathf.Abs(_netPitch.Value - _lookPitch) > 0.1f)
+            if (Mathf.Abs(_netPitch.Value - _lookPitch) > 0.05f)
                 _netPitch.Value = _lookPitch;
         }
     }
@@ -253,14 +301,21 @@ public class PlayerController : NetworkBehaviour
     {
         // local varialbes
         if (IsOwner)
+        {
             ApplyLook(_lookYaw, _lookPitch);
+            
+        }
 
         // Use net variable
         else
         {
             InterpolationRemotePlayer();
+            
             ApplyLook(_netYaw.Value, _netPitch.Value);
+            UpdateAnimation();
+
         }
+
         
     }
 
@@ -327,6 +382,99 @@ public class PlayerController : NetworkBehaviour
         };
 
         return state;
+    }
+
+    #endregion
+
+    #region DBNO
+
+    private void HandleDowned(object sender, EventArgs e)
+    {
+        _isDowned = true;
+
+        animator.SetBool("IsDowned", true);
+    }
+    
+    private void HandleRevived(object sender, EventArgs e)
+    {
+        _isDowned = false;
+
+        animator.SetBool("IsDowned", false);
+    }
+
+    private void HandleDeath(object sender, EventArgs e)
+    {
+        _isDead = true;
+
+        /// TO DO: animation
+    }
+
+    private bool CanMove()
+    {
+        return !_isDowned && !_isDead;
+    }
+    
+    #endregion
+    
+    #region Animation
+    
+    private void UpdateLocalAnimation()
+    {
+        Vector2 moveForAnim = CalculateMoveForAnim();
+
+        animator.SetFloat("MoveX", moveForAnim.x, 0.1f, Time.deltaTime);
+        animator.SetFloat("MoveY", moveForAnim.y, 0.1f, Time.deltaTime);
+        
+        if(Mathf.Abs(_netMoveX.Value - moveForAnim.x) > 0.01f)
+            _netMoveX.Value = moveForAnim.x;
+
+        if(Mathf.Abs(_netMoveY.Value - moveForAnim.y) > 0.01f)
+            _netMoveY.Value = moveForAnim.y;
+
+    }
+
+    private void UpdateAnimation()
+    {
+        float moveX;
+        float moveY;
+
+        if (IsOwner)
+        {
+            Vector2 moveForAnim = CalculateMoveForAnim();
+
+            // Owner update net variable directly
+            moveX = moveForAnim.x;
+            moveY = moveForAnim.y;
+        }
+        else
+        {
+            // Remote read net variable
+            moveX = _netMoveX.Value;
+            moveY = _netMoveY.Value;
+        }
+        
+        animator.SetFloat("MoveX", moveX, 0.1f, Time.deltaTime);
+        animator.SetFloat("MoveY", moveY, 0.1f, Time.deltaTime);
+    }
+        
+    private Vector2 CalculateMoveForAnim()
+    {
+        Vector3 velocity = _playerController.velocity;
+
+        // Transform velocity to local space
+        Vector3 localVelocity = bodyRoot.InverseTransformDirection(velocity);
+
+        // Normalize to -1 to 1
+        float moveX = Mathf.Clamp(localVelocity.x / _walkSpeed, -1f, 1f);
+        float moveY = Mathf.Clamp(localVelocity.z / _walkSpeed, -1f, 1f);
+
+
+        // Just to make sure animations snap to zero
+        // According to ChatGPT suggestion
+        if (Mathf.Abs(moveX) < 0.02f) moveX = 0f;
+        if (Mathf.Abs(moveY) < 0.02f) moveY = 0f;
+        
+        return new Vector2(moveX, moveY);
     }
 
     #endregion

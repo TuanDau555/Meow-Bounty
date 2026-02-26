@@ -29,6 +29,13 @@ public class InputManager : Singleton<InputManager>
     public Vector2 GetMouseDelta() => inputSystem.Player.Look.ReadValue<Vector2>();
 
     public bool IsFiringPressed() => inputSystem.Player.Fire.WasPressedThisFrame();
+
+    public bool IsInteractPressed() => inputSystem.Player.Interact.IsPressed();
+
+    /// <summary>
+    /// Player pressed tab button
+    /// </summary>
+    public bool IsSwitchPress() => inputSystem.Player.Interact.IsPressed();
     
     #endregion
 }
