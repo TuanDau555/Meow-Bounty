@@ -1,3 +1,4 @@
+using Unity.Netcode;
 using UnityEngine;
 
 public class BulletProjectile : ProjectileBase
@@ -6,6 +7,8 @@ public class BulletProjectile : ProjectileBase
 
     private Vector3 _velocity;
     [SerializeField] private float _gravityScale = 0.2f;
+    [SerializeField] private GameObject hitEffectPrefab;
+    [SerializeField] private float effectLifeTime = 0.2f;
 
     #endregion
 
@@ -20,9 +23,16 @@ public class BulletProjectile : ProjectileBase
 
     #endregion
 
-    protected override void HandleHit(Collider other)
+    [ClientRpc]
+    protected override void SpawnImpactEffectClientRpc(Vector3 position)
     {
-        base.HandleHit(other);
+
+        if(hitEffectPrefab == null) return;
+
+        var vfx = Instantiate(hitEffectPrefab, position, Quaternion.identity);
+        Destroy(vfx, effectLifeTime);
+        // TODO: Hit sound
+
     }
 
     protected override void Move()

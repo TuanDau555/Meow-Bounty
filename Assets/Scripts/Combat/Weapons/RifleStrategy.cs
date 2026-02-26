@@ -1,10 +1,19 @@
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.VFX;
 
 [CreateAssetMenu(menuName = "Weapon/Rifle")]
 public class RifleStrategy : WeaponStrategy
 {
-    [SerializeField] private ProjectileStats projectileStats;
+    [Header("Gun Stat")]
+    [SerializeField] private ProjectileStats projectileStats;    
+
+    [Header("VFX")]
+    [SerializeField] private GameObject muzzleFlashVFXPrefab;
+    [SerializeField] private float muzzleFlashDur = 0.1f;
+
+    [SerializeField] private Vector3 muzzleFlashRotationOffset = Vector3.zero;
+
     public override FireResult ExecuteServer(FireContext context)
     {
 
@@ -39,6 +48,18 @@ public class RifleStrategy : WeaponStrategy
     {
         base.ExecuteClientPredition(context);
         // TODO: Spawn fake projecttile
-        // TODO: Play muzzle splash
+        
+        Quaternion baseRotation = Quaternion.LookRotation(context.direction);
+        Quaternion offset = Quaternion.Euler(muzzleFlashRotationOffset);
+
+        if(muzzleFlashVFXPrefab != null)
+        {
+            GameObject muzzleFlash = Instantiate(
+                muzzleFlashVFXPrefab,
+                context.origin,
+                baseRotation * offset
+            );
+            Destroy(muzzleFlash, muzzleFlashDur);
+        }
     }
 }

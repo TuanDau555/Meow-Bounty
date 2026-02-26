@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Rifle Bullet
   m_EditorClassIdentifier: 
   projectileName: Rifle Bullet
-  projectilePrefab: {fileID: 8743994284172942846, guid: 7d646a184ec9a204aad39868f496c1f2,
+  projectilePrefab: {fileID: 8455010257448164214, guid: ea6bcff3d6b2cee4a9f7d651ae946206,
     type: 3}
   speed: 20
   damage: 10

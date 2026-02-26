@@ -85,12 +85,29 @@ public abstract class ProjectileBase : NetworkBehaviour
         if(other.TryGetComponent<IDamageable>(out var damageable))
         {
             damageable.TakeDamage(_stats.damage, _ownerClientId);
+
+            SendHitmakerToShooter();
         }
 
         SpawnImpactEffectClientRpc(transform.position);
         Despawn();
     }
-        
+    
+    private void SendHitmakerToShooter()
+    {
+        if(!NetworkManager.Singleton.ConnectedClients.TryGetValue(_ownerClientId, out var client)) return;
+
+        var rpcParms = new ClientRpcParams
+        {
+            Send = new ClientRpcSendParams
+            {
+                TargetClientIds = new[] { _ownerClientId }
+            }  
+        };
+
+        ShowHitmakerClientRpc(rpcParms);
+    }
+
     #endregion
 
     #region Network
@@ -108,6 +125,12 @@ public abstract class ProjectileBase : NetworkBehaviour
         {
             NetworkObject.Despawn();
         }
+    }
+
+    [ClientRpc]
+    private void ShowHitmakerClientRpc(ClientRpcParams rpcParams = default)
+    {
+        HitmakerUI.Instance.ShowHitmaker();
     }
     
     #endregion

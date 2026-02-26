@@ -13,3 +13,7 @@ MonoBehaviour:
   m_Name: Rifle Strategy
   m_EditorClassIdentifier: 
   projectileStats: {fileID: 11400000, guid: 96b5ac0a84c851b4ea1ab0e8e6ae2014, type: 2}
+  muzzleFlashVFXPrefab: {fileID: 4292798461300703831, guid: 33f6f4b201905cd419e70194ad5d5e17,
+    type: 3}
+  muzzleFlashDur: 1
+  muzzleFlashRotationOffset: {x: 0, y: -90, z: 0}
