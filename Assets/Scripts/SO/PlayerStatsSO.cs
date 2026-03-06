@@ -6,6 +6,7 @@ public class PlayerStatsSO : ScriptableObject
 {
     public LookStats lookStats;
     public HeadBobStats headBobStats;
+    public InteractStats interactStats;
     
     #region Look
     [Serializable]
@@ -43,5 +44,19 @@ public class PlayerStatsSO : ScriptableObject
         public float sprintBobSpeed = 18f;
     }
     
+    #endregion
+
+    #region Interact
+
+    [Serializable]
+    public class InteractStats
+    {
+        
+        [Range(1, 5f)]
+        public float interactDistance = 3f;
+        public LayerMask interactMask;
+        
+        
+    }
     #endregion
 }
