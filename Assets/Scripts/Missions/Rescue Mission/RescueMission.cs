@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class RescuMission : MissionBase
+public class RescueMission : MissionBase
 {
     public override void StartMission()
     {
