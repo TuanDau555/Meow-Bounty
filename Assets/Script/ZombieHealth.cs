@@ -1,56 +1,35 @@
-﻿using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.AI;
+using UnityEngine.UI;
 
-public class ZombieHealth : NetworkBehaviour
+public class ZombieHealth : MonoBehaviour 
 {
-    // PHẢI CÓ NetworkVariable thì mới dùng được .Value và đồng bộ mạng
-    public NetworkVariable<float> health = new NetworkVariable<float>(100f);
+    public float health = 100f;
+    public float maxHealth = 100f;
+    public Slider healthBar; // Thanh máu trên đầu zombie
 
-    private NavMeshAgent agent;
-
-    void Start()
+    public void TakeDamage(float dmg) 
     {
-        agent = GetComponent<NavMeshAgent>();
-    }
-
-    void Update()
-    {
-        // Chỉ Server mới điều khiển AI
-        if (!IsServer) return;
-
-        GameObject player = GameObject.FindWithTag("Player");
-        if (player != null && agent != null && agent.enabled)
-        {
-            agent.SetDestination(player.transform.position);
+        health -= dmg;
+        
+        // Cập nhật thanh máu trên đầu
+        if (healthBar != null) {
+            healthBar.value = health / maxHealth;
         }
-    }
 
-    // Nhận vào float dmg để khớp với script bắn súng
-    public void TakeDamage(float dmg)
-    {
-        if (!IsServer) return;
+        Debug.Log("Zombie trúng đạn! Máu còn: " + health);
 
-        // Trừ máu thông qua .Value
-        health.Value -= dmg;
-
-        Debug.Log("Zombie HP: " + health.Value);
-
-        if (health.Value <= 0)
-        {
+        if (health <= 0) {
             Die();
         }
     }
 
-    void Die()
-    {
-        // Báo cho GameManager (nếu bạn đã tạo)
-        if (GameLevelManager.Instance != null)
-        {
+    void Die() {
+        // Báo cho GameManager để đếm số lượng zombie chết
+        if (GameLevelManager.Instance != null) {
             GameLevelManager.Instance.ZombieDied();
         }
-
-        // Xóa zombie khỏi toàn bộ các máy chơi
-        GetComponent<NetworkObject>().Despawn();
+        
+        // Biến mất ngay lập tức
+        Destroy(gameObject); 
     }
 }

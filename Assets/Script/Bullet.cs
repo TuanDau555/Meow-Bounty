@@ -1,52 +1,27 @@
-﻿using Unity.Netcode;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class Bullet : NetworkBehaviour
+public class Bullet : MonoBehaviour 
 {
+    public float damage = 25f;
     public float speed = 30f;
-    public float damage = 25f; // <--- Thêm dòng này để hết lỗi đỏ chỗ 'damage'
-    public float lifeTime = 3f;
 
-    public override void OnNetworkSpawn()
-    {
-        if (IsServer)
-        {
-            // Tự hủy sau 3 giây nếu không trúng gì
-            Invoke(nameof(DespawnBullet), lifeTime);
-        }
-    }
-
-    void FixedUpdate()
-    {
+    void Update() {
         transform.Translate(Vector3.forward * speed * Time.deltaTime);
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other) 
     {
-        if (!IsServer) return;
-
-        // Nếu chạm vào người chơi thì bỏ qua (để không bị biến mất ngay lập tức)
-        if (other.CompareTag("Player")) return;
-
-        if (other.CompareTag("Zombie"))
+        // Kiểm tra xem có trúng vật thể có Tag là Zombie không
+        if (other.CompareTag("Zombie")) 
         {
-            var health = other.GetComponent<ZombieHealth>();
-            if (health != null) health.TakeDamage(damage);
-            DespawnBullet();
+            ZombieHealth zombie = other.GetComponent<ZombieHealth>();
+            if (zombie != null) {
+                zombie.TakeDamage(damage);
+            }
+            Destroy(gameObject); // Đạn chạm là biến mất
         }
-        else
-        {
-            // Chạm vào tường hoặc đất cũng biến mất
-            DespawnBullet();
-        }
-    }
-
-    // Viết thêm hàm này để hết lỗi đỏ chỗ 'DespawnBullet'
-    void DespawnBullet()
-    {
-        if (IsServer && IsSpawned && GetComponent<NetworkObject>() != null)
-        {
-            GetComponent<NetworkObject>().Despawn();
+        else if (other.CompareTag("Environment")) {
+            Destroy(gameObject); // Chạm tường cũng biến mất
         }
     }
 }

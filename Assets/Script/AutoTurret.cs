@@ -1,13 +1,13 @@
-﻿using Unity.Netcode;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class AutoTurret : NetworkBehaviour
+// Đổi từ NetworkBehaviour sang MonoBehaviour
+public class AutoTurret : MonoBehaviour
 {
     [Header("Cấu hình")]
-    public float range = 15f;          // Tầm bắn
-    public float fireRate = 0.5f;     // 0.5 giây bắn 1 viên
-    public GameObject bulletPrefab;    // Dùng chung Prefab viên đạn của Player
+    public float range = 15f;          
+    public float fireRate = 0.5f;     
+    public GameObject bulletPrefab;    
 
     [Header("Bộ phận xoay")]
     public Transform turretHead;
@@ -18,18 +18,18 @@ public class AutoTurret : NetworkBehaviour
 
     void Update()
     {
-        // Chỉ Server mới có quyền tìm mục tiêu và ra lệnh bắn
-        if (!IsServer) return;
+        // Bỏ dòng if(!IsServer) vì giờ mình chơi Offline
 
         FindTarget();
 
         if (target != null)
         {
-            // 1. Xoay đầu trụ súng về phía Zombie
+            // 1. Xoay đầu trụ súng
             RotateTowardsTarget();
 
             // 2. Kiểm tra khoảng cách và bắn
-            if (Vector3.Distance(transform.position, target.position) <= range)
+            float distance = Vector3.Distance(transform.position, target.position);
+            if (distance <= range)
             {
                 if (Time.time >= nextFireTime)
                 {
@@ -42,7 +42,7 @@ public class AutoTurret : NetworkBehaviour
 
     void FindTarget()
     {
-        // Tìm tất cả Zombie trong cảnh
+        // Tìm Zombie qua Tag
         GameObject[] zombies = GameObject.FindGameObjectsWithTag("Zombie");
         float shortestDistance = Mathf.Infinity;
         GameObject nearestZombie = null;
@@ -70,22 +70,19 @@ public class AutoTurret : NetworkBehaviour
     void RotateTowardsTarget()
     {
         Vector3 direction = target.position - transform.position;
-
-        // Nếu súng vẫn quay ngược, hãy thử dùng: direction = transform.position - target.position;
-
         Quaternion lookRotation = Quaternion.LookRotation(direction);
-        Vector3 rotation = Quaternion.Lerp(turretHead.rotation, lookRotation, Time.deltaTime * 5f).eulerAngles;
+        // Lerp giúp súng xoay mượt mà hơn
+        Vector3 rotation = Quaternion.Lerp(turretHead.rotation, lookRotation, Time.deltaTime * 10f).eulerAngles;
         turretHead.rotation = Quaternion.Euler(0f, rotation.y, 0f);
     }
 
     void Shoot()
     {
-        // Tạo đạn trên Server và Spawn ra mạng
-        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
-        bullet.GetComponent<NetworkObject>().Spawn();
+        // Chỉ cần Instantiate là xong, không cần lệnh Spawn() rắc rối nữa
+        Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+        Debug.Log("Trụ súng đang bắn!");
     }
 
-    // Vẽ vòng tròn tầm bắn trong Editor để bạn dễ căn chỉnh
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
