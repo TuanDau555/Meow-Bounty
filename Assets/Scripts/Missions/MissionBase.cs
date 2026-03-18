@@ -9,7 +9,7 @@ using UnityEngine;
 /// </summary>
 public abstract class MissionBase : MonoBehaviour
 {
-    #region Parametor
+    #region Parameter
     
     [Tooltip("Objectives to complete a mission")]
     [SerializeField] protected List<ObjectiveBase> objectives;
@@ -30,6 +30,8 @@ public abstract class MissionBase : MonoBehaviour
 
     protected virtual void Awake()
     {
+        TargetProgress = objectives.Count;
+        
         foreach(var obj in objectives)
         {
             obj.OnObjectiveCompleted += HandleObjectiveCompleted;
