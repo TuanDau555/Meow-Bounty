@@ -96,7 +96,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.5
+  m_Radius: 1.5
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1439531626457798939
 MonoBehaviour:
@@ -207,7 +207,7 @@ MonoBehaviour:
   _gravityScale: 1
   hitEffectPrefab: {fileID: 2820346472640766611, guid: ae7155703e5ac6b48bb13cfb20e82e43,
     type: 3}
-  effectLifeTime: 0.2
+  effectLifeTime: 1
 --- !u!1 &4138103531684922666
 GameObject:
   m_ObjectHideFlags: 0

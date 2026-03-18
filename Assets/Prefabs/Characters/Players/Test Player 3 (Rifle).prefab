@@ -336,6 +336,7 @@ GameObject:
   - component: {fileID: 8285212205127061889}
   - component: {fileID: 1716938568028760978}
   - component: {fileID: 5250891729746473521}
+  - component: {fileID: 597611723710912811}
   m_Layer: 0
   m_Name: Test Player 3 (Rifle)
   m_TagString: Player
@@ -549,6 +550,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerStatsSO: {fileID: 11400000, guid: 23c97283d6510604fb20ab3e01ecab44, type: 2}
+--- !u!114 &597611723710912811
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3998615307453508779}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d9e0c5b40cffe7489ab2fa6d12cfb8f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4564850675829416625
 GameObject:
   m_ObjectHideFlags: 0
