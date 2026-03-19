@@ -43,6 +43,7 @@ public class NetworkHealth : NetworkBehaviour, IDamageable
         if (IsServer)
         {
             CurrentHealth.Value = maxHealth;
+            GameEndManager.Instance.RegisterPlayer(this);
         }
 
         CurrentHealth.OnValueChanged += HandleHealthChanged;

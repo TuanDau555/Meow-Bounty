@@ -15,6 +15,7 @@ public abstract class MissionBase : MonoBehaviour
     [SerializeField] protected List<ObjectiveBase> objectives;
 
     public bool IsCompleted { get; private set; }
+    public bool IsFailed { get; private set; }
 
     public int CurrentProgress { get; private set; }
     
@@ -22,6 +23,7 @@ public abstract class MissionBase : MonoBehaviour
     public int TargetProgress { get; private set; }
 
     public event EventHandler<MissionBase> OnMissionCompleted;
+    public event EventHandler<MissionBase> OnMissionFailed;
     public event EventHandler<MissionBase> OnProgressChanged;
 
     #endregion
@@ -71,6 +73,14 @@ public abstract class MissionBase : MonoBehaviour
 
         IsCompleted = true;
         OnMissionCompleted?.Invoke(this, this);
+    }
+
+    protected virtual void FailMission()
+    {
+        if(IsFailed || IsCompleted) return;
+
+        IsFailed = true;
+        OnMissionFailed?.Invoke(this, this);
     }
     
     public virtual void StartMission()
