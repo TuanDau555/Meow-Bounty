@@ -105,5 +105,29 @@ public class PlayFabManager : SingletonPersistent<PlayFabManager>
             );
     }
     #endregion
+    
+    #region Currency
+
+    public void AddCurrency(int amount)
+    {
+        var request = new AddUserVirtualCurrencyRequest
+        {
+            VirtualCurrency = "CN",
+            Amount = amount
+        };
+
+        PlayFabClientAPI.AddUserVirtualCurrency(request, OnGrantVirtualCurrencySuccess, 
+        error =>
+        {
+           Debug.LogError(error.GenerateErrorReport());
+        });
+    }
+    
+    private void OnGrantVirtualCurrencySuccess(ModifyUserVirtualCurrencyResult result)
+    {
+        Debug.Log($"Currency Grant: {result.Balance}");
+    }
+    
+    #endregion
 }
 

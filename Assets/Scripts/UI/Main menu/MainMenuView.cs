@@ -1,6 +1,8 @@
 using System;
 using TMPro;
 using Unity.Services.Authentication;
+using PlayFab;
+using PlayFab.ClientModels;
 using UnityEngine;
 
 public class MainMenuView : MonoBehaviour
@@ -8,6 +10,7 @@ public class MainMenuView : MonoBehaviour
     #region Variables
     [SerializeField] private GameObject nameInputUI;
     [SerializeField] private TextMeshProUGUI playerNameText;
+    [SerializeField] private TextMeshProUGUI coinsBalanceText;
 
     private PlayerProfileService profileService;
     private IHostAuthority hostAuthority;
@@ -37,6 +40,16 @@ public class MainMenuView : MonoBehaviour
     {
         playerNameText.text = profileService.DisplayName;
     }
+
+    private void GetVirtualCurrencies()
+    {
+        PlayFabClientAPI.GetUserInventory(new GetUserInventoryRequest(), OnGetUserInventorySuccess,
+        error =>
+        {
+           Debug.LogError(error.GenerateErrorReport());
+        });
+    }
+    
     #endregion
 
     #region Prepare Profile
@@ -60,6 +73,7 @@ public class MainMenuView : MonoBehaviour
         {
             nameInputUI.SetActive(false); 
             SetDisplayName();
+            GetVirtualCurrencies();
             Debug.Log("Profile Ready");
         }
 
@@ -71,5 +85,16 @@ public class MainMenuView : MonoBehaviour
             Debug.Log("GameLobbyService initialized after profile ready.");
         }
     }
+    #endregion
+
+    #region Get Currency
+    
+    private void OnGetUserInventorySuccess(GetUserInventoryResult result)
+    {
+        int coins = result.VirtualCurrency["CN"];
+        coinsBalanceText.text = coins.ToString();
+
+    }
+    
     #endregion
 }

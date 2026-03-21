@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
@@ -10,7 +11,11 @@ public class EndGameUI : Singleton<EndGameUI>
 
     [SerializeField] private CanvasGroup endPanelGroup;
     [SerializeField] private Button backBtn;
+
+    [Tooltip("Mission success or not")]
     [SerializeField] private TextMeshProUGUI resultText;
+    [SerializeField] private TextMeshProUGUI coinEarnText;
+    [SerializeField] private TextMeshProUGUI expEarnText;
 
     private bool _isLoading;
 
@@ -26,8 +31,15 @@ public class EndGameUI : Singleton<EndGameUI>
         backBtn.onClick.AddListener(OnClickBackToMenu);
     }
 
+    private void OnEnable()
+    {
+        RewardManager.Instance.OnRewardReceived += UpdateRewardUI;
+    }
+
     private void OnDisable()
     {
+        RewardManager.Instance.OnRewardReceived -= UpdateRewardUI;
+
         backBtn.onClick.RemoveListener(OnClickBackToMenu);
     }
 
@@ -40,11 +52,22 @@ public class EndGameUI : Singleton<EndGameUI>
         endPanelGroup.alpha = 1;
 
         resultText.text = isSuccess ? "MISSION COMPLETE" : "MISSION FAILED";
+
+        coinEarnText.text = $"+{RewardManager.Instance.LastCoins}";
+        expEarnText.text = $"+{RewardManager.Instance.LastExp}xp";
+
         
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         Time.timeScale = 0;
         Debug.Log("Show End Panel");
+    }
+    
+    private void UpdateRewardUI(int coins, int exp)
+    {
+        Debug.Log($"Coin: {coins}, EXP: {exp}");
+        coinEarnText.text = $"+{coins}";
+        expEarnText.text = $"+{exp}xp";
     }
 
     private void OnClickBackToMenu()
