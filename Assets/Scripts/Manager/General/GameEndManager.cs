@@ -17,7 +17,6 @@ public class GameEndManager : SingletonNetwork<GameEndManager>
     public override void OnNetworkSpawn()
     {
         if(!IsServer) return;
-        Debug.Log(gameObject.name);
 
         foreach(var client in NetworkManager.Singleton.ConnectedClientsList)
         {
