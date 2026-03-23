@@ -21,9 +21,6 @@ public class RewardManager : Singleton<RewardManager>
 
         var profileService = ServiceLocator.ProfileService;
 
-        Debug.Log($"Profile: {ServiceLocator.ProfileService}");
-        Debug.Log($"PlayerData: {ServiceLocator.ProfileService.PlayerData}");
-
         if(profileService == null)
         {
             Debug.LogError("ProfileService null");
