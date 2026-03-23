@@ -15,7 +15,7 @@ public class LobbyListView : MonoBehaviour
     
     #region Variables
     [Header("Lobby List Panel")]
-    [SerializeField] private GameObject lobbyPanel;
+    [SerializeField] private CanvasGroup lobbyPanelCanvas;
     [SerializeField] private GameObject roomInfoPrefabs;
     [SerializeField] private GameObject roomInfoContent;
     [SerializeField] private Button refreshBtn;
@@ -28,7 +28,7 @@ public class LobbyListView : MonoBehaviour
 
     [Space(10)]
     [Header("Room Panel")]
-    [SerializeField] private GameObject roomPanel;
+    [SerializeField] private CanvasGroup roomPanelCanvas;
     [SerializeField] private GameObject playerInfoPrefabs;
     [SerializeField] private GameObject playerInfoContent;
     [SerializeField] private TextMeshProUGUI roomNameText;
@@ -131,8 +131,13 @@ public class LobbyListView : MonoBehaviour
     #region UI Updated
     private void ShowRoom(LobbyData lobby)
     {
-        lobbyPanel.SetActive(false);
-        roomPanel.SetActive(true);
+        lobbyPanelCanvas.alpha = 0;
+        lobbyPanelCanvas.blocksRaycasts = false;
+        lobbyPanelCanvas.interactable = false;
+        
+        roomPanelCanvas.alpha = 1;
+        roomPanelCanvas.blocksRaycasts = true;
+        roomPanelCanvas.interactable = true;
 
         roomNameText.text = lobby.lobbyName;
         roomCodeText.text = lobby.lobbyCode;
@@ -258,8 +263,14 @@ public class LobbyListView : MonoBehaviour
     private void OnLobbyLeft(object sender, EventArgs e)
     {
         Debug.Log("Lobby panel show");
-        roomPanel.SetActive(false);
-        lobbyPanel.SetActive(true);
+
+        roomPanelCanvas.alpha = 0;
+        roomPanelCanvas.blocksRaycasts = false;
+        roomPanelCanvas.interactable = false;
+        
+        lobbyPanelCanvas.alpha = 1;
+        lobbyPanelCanvas.blocksRaycasts = true;
+        lobbyPanelCanvas.interactable = true;
     }
 
     /// <summary>
