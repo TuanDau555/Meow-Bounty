@@ -15,7 +15,13 @@ MonoBehaviour:
   lookStats:
     lookSensitive: 0.1
     lookLimit: 70
+    lookLimitWhenDowned: 45
   headBobStats:
     walkBobSpeed: 14
     walkBobAmount: 0.5
     sprintBobSpeed: 18
+  interactStats:
+    interactDistance: 1.5
+    interactMask:
+      serializedVersion: 2
+      m_Bits: 256

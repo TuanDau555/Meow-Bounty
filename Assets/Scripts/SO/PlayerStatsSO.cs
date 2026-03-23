@@ -6,6 +6,7 @@ public class PlayerStatsSO : ScriptableObject
 {
     public LookStats lookStats;
     public HeadBobStats headBobStats;
+    public InteractStats interactStats;
     
     #region Look
     [Serializable]
@@ -20,6 +21,10 @@ public class PlayerStatsSO : ScriptableObject
         [Tooltip("Is the limit that player can look up and down")]
         [Range(45, 90)]
         public float lookLimit;
+
+        [Tooltip("Is the limit that player can look up and down when player get knocked down")]
+        [Range(45, 60)]
+        public float lookLimitWhenDowned = 45f;
     }
 
     #endregion
@@ -39,5 +44,19 @@ public class PlayerStatsSO : ScriptableObject
         public float sprintBobSpeed = 18f;
     }
     
+    #endregion
+
+    #region Interact
+
+    [Serializable]
+    public class InteractStats
+    {
+        
+        [Range(1, 5f)]
+        public float interactDistance = 3f;
+        public LayerMask interactMask;
+        
+        
+    }
     #endregion
 }

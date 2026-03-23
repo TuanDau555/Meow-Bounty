@@ -1,24 +1,39 @@
-using Unity.Netcode;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Character/Definition")]
 public class CharacterDefinitionSO : ScriptableObject
-{
+{   
+    [Header("ID")]
     public string id;
+    
+    
+    [Space(10)]
+    [Header("General")]
     public string displayName;
     public Sprite icon;
+
+    [TextArea(3, 5)]
+    public string description;
+
+    [Space(10)]
+    [Header("Model")]
     public Transform characterPrefab;
+
+    [Tooltip("This is just empty prefab, just visual and animation no logic")]
+    public GameObject previewPrefab;
     public CharacterStats characterStats;
 
     [System.Serializable]
     public class CharacterStats
     {
-        [Header("HP/Defend")]
+        [Header("Basic stats")]
         [Range(1, 10)]
         public float HP;
 
         [Range(1, 10)]
         public float defend;
+        [Range(1, 100)]
+        public float damage;
 
         [Space(10)]
         [Header("Stamina")]

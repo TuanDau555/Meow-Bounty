@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class PlayerProfileService
 {
+    public event EventHandler OnProfileReady;
+    
     public PlayerData PlayerData { get ; private set; }
     public string DisplayName { get; private set; }
     
@@ -48,6 +50,7 @@ public class PlayerProfileService
             {
                 DisplayName = displayName;
                 onReady?.Invoke();
+                OnProfileReady?.Invoke(null, EventArgs.Empty);
             }, 
             Debug.LogError);
     }
@@ -57,5 +60,9 @@ public class PlayerProfileService
         return string.IsNullOrEmpty(DisplayName);
     }
 
-    // TODO: NEED A SAVE PROFILE FOR CHARACTER EQUIP
+    public void SetEquippedCharacter(string characterId)
+    {
+        PlayerData.equippedCharacter = characterId;
+        PlayFabManager.SaveProfile(PlayerData);
+    }
 }

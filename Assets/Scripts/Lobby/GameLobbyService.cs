@@ -17,7 +17,7 @@ public class GameLobbyService : IGameLobbyService
 {
     #region Parameter
     private const float k_pollInterval = 1.5f;
-    private const int k_hearbeatInterval = 15000; // 15s
+    private const int k_heartbeatInterval = 15000; // 15s
 
     private bool _relayPrepared = false;
     
@@ -96,7 +96,7 @@ public class GameLobbyService : IGameLobbyService
             var response = await LobbyService.Instance.QueryLobbiesAsync(
                 new QueryLobbiesOptions
                 {
-                    // Only retrun room have available slot
+                    // Only return room have available slot
                     Filters = new List<QueryFilter>
                     {
                         new QueryFilter(
@@ -309,7 +309,7 @@ public class GameLobbyService : IGameLobbyService
     }
     #endregion
 
-    #region Lobby Hearbeat
+    #region Lobby Heartbeat
     public void StartHeartbeat()
     {
         StopHeartbeat(); // Stop the old heartbeat to prevent conflict
@@ -330,7 +330,7 @@ public class GameLobbyService : IGameLobbyService
             while (!token.IsCancellationRequested)
             {
                 await LobbyService.Instance.SendHeartbeatPingAsync(_ugsLobby.Id);
-                await Task.Delay(k_hearbeatInterval, token); // 15s/one token
+                await Task.Delay(k_heartbeatInterval, token); // 15s/one token
             }
         }
         catch(LobbyServiceException e)
@@ -524,11 +524,11 @@ public class GameLobbyService : IGameLobbyService
                     )
                 },
                 {
-                    // Character that is equiped
+                    // Character that is equipped
                     LobbyKeys.CHARACTER_ID,
                     new PlayerDataObject(
                         PlayerDataObject.VisibilityOptions.Public,
-                        profileService.PlayerData.equipedCharacter
+                        profileService.PlayerData.equippedCharacter
                     )
                 },
                 {
