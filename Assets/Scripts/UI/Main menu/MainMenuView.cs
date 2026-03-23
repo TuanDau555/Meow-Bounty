@@ -11,12 +11,19 @@ public class MainMenuView : MonoBehaviour
     [SerializeField] private GameObject nameInputUI;
     [SerializeField] private TextMeshProUGUI playerNameText;
     [SerializeField] private TextMeshProUGUI coinsBalanceText;
+    [SerializeField] private TextMeshProUGUI coinsBalanceTextInShop;
 
     private PlayerProfileService profileService;
     private IHostAuthority hostAuthority;
     #endregion
 
     #region Execute
+
+    private void Awake()
+    {
+        CurrencyManager.Instance.OnCoinUpdate += HandleCoinUpdate;
+    }
+
     private void Start()
     {
         ServiceLocator.InitProFile();
@@ -33,21 +40,29 @@ public class MainMenuView : MonoBehaviour
             AuthManager.Instance.OnAuthReady += LoadProfile;
         }
     }
+
+    private void OnDestroy()
+    {
+        CurrencyManager.Instance.OnCoinUpdate -= HandleCoinUpdate;
+    }
+
     #endregion
 
+    #region Events
+
+    private void HandleCoinUpdate(int amount)
+    {
+        Debug.Log($"Coin: {amount}");
+        coinsBalanceText.text = amount.ToString();
+        coinsBalanceTextInShop.text = amount.ToString();
+    }
+    
+    #endregion
+    
     #region Set Profile
     private void SetDisplayName()
     {
         playerNameText.text = profileService.DisplayName;
-    }
-
-    private void GetVirtualCurrencies()
-    {
-        PlayFabClientAPI.GetUserInventory(new GetUserInventoryRequest(), OnGetUserInventorySuccess,
-        error =>
-        {
-           Debug.LogError(error.GenerateErrorReport());
-        });
     }
     
     #endregion
@@ -55,7 +70,6 @@ public class MainMenuView : MonoBehaviour
     #region Prepare Profile
     private void LoadProfile(object sender, EventArgs e)
     {
-        Debug.Log("LoadProfile called");
         AuthManager.Instance.OnAuthReady -= LoadProfile;
 
         profileService.LoadOrCreateProfile(OnProfileReady);
@@ -73,7 +87,7 @@ public class MainMenuView : MonoBehaviour
         {
             nameInputUI.SetActive(false); 
             SetDisplayName();
-            GetVirtualCurrencies();
+            CurrencyManager.Instance.GetCoinCurrency();
             Debug.Log("Profile Ready");
         }
 
@@ -87,14 +101,4 @@ public class MainMenuView : MonoBehaviour
     }
     #endregion
 
-    #region Get Currency
-    
-    private void OnGetUserInventorySuccess(GetUserInventoryResult result)
-    {
-        int coins = result.VirtualCurrency["CN"];
-        coinsBalanceText.text = coins.ToString();
-
-    }
-    
-    #endregion
 }

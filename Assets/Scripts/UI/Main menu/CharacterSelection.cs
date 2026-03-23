@@ -20,7 +20,7 @@ public class CharacterSelection : MonoBehaviour
     private int currentIndex;
     private GameObject currentPreview;
     private PlayerProfileService playerProfileService;
-    
+
 
     #endregion
 
@@ -33,6 +33,16 @@ public class CharacterSelection : MonoBehaviour
             Destroy(currentPreview);
             currentPreview = null;
         }
+
+        if (ShopManager.Instance != null)
+        {
+            ShopManager.Instance.OnCharacterPurchase += HandleCharacterPurchase;
+        }
+        else
+        {
+            Debug.LogError("ShopManager not ready!");
+        }
+        
     }
 
     private void OnEnable()
@@ -50,9 +60,20 @@ public class CharacterSelection : MonoBehaviour
 
     }
 
+    private void OnDestroy()
+    {
+        ShopManager.Instance.OnCharacterPurchase -= HandleCharacterPurchase;
+    }
+
+    #endregion
+
+    #region Init
+
     public void Init(PlayerProfileService profileService)
     {
         playerProfileService = profileService;
+
+        RefreshOwnedCharacters();
 
         foreach (var c in databaseSO.characters)
         {
@@ -104,8 +125,33 @@ public class CharacterSelection : MonoBehaviour
         
         ShowCharacter();
     }
+    
     #endregion
 
+    #region Events
+    
+    private void HandleCharacterPurchase(string characterId)
+    {
+        if (playerProfileService == null)
+        {
+            Debug.LogWarning("CharacterSelection: playerProfileService is null, skip refresh");
+            return;
+        }
+
+        var newCharacter = databaseSO.characters.FirstOrDefault(c => c.id == characterId);
+
+        if(newCharacter == null) return;
+        
+        if(!ownedCharacters.Contains(newCharacter))
+        {
+            ownedCharacters.Add(newCharacter);
+        }
+        currentIndex = ownedCharacters.Count - 1;
+        ShowCharacter();
+    }
+    
+    #endregion
+    
     #region Selected
 
     private void ShowCharacter()
@@ -168,6 +214,16 @@ public class CharacterSelection : MonoBehaviour
 
 
         playerProfileService.SetEquippedCharacter(selectedId);
+    }
+
+    private void RefreshOwnedCharacters()
+    {
+        ownedCharacters = databaseSO.characters
+            .Where(c => playerProfileService.PlayerData.ownedCharacter.Contains(c.id))
+            .ToList();
+
+        currentIndex = 0;
+        ShowCharacter();
     }
     
     #endregion
