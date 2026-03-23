@@ -12,7 +12,7 @@ public class CharacterService
     }
 
     public string EquippedCharacterId 
-        => playerData.equipedCharacter;
+        => playerData.equippedCharacter;
 
     public CharacterDefinitionSO GetEquipped()
         => database.GetById(EquippedCharacterId);
@@ -28,7 +28,7 @@ public class CharacterService
             return false;
         }
 
-        playerData.equipedCharacter = id;
+        playerData.equippedCharacter = id;
         return true;
     }
 }
