@@ -10,19 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 89af1531afb7ad247a6ff0a453d29942, type: 3}
-  m_Name: Test Character Definition SO
+  m_Name: Cat Bomber Definition SO 1
   m_EditorClassIdentifier: 
-  id: Cat_01
-  displayName: Cat
-  icon: {fileID: 0}
-  characterPrefab: {fileID: 8271282784123907453, guid: 48d261bf65990634988e6c5a56c58d0e,
+  id: Cat_02
+  displayName: Cat Bomber
+  icon: {fileID: 2047992146, guid: 080cb6d98b00c2645b2c41df5f69bc78, type: 3}
+  description: Blow everything away
+  characterPrefab: {fileID: 8271282784123907453, guid: a44ed0904f6abf54b8192cd6e91d9643,
     type: 3}
-  previewPrefab: {fileID: 8421418390401627055, guid: 9f15fc5975e702a41a91cc663ff3c132,
+  previewPrefab: {fileID: 8252867841114933110, guid: d7a620a42de34774594aae01b3f3ad8d,
     type: 3}
   characterStats:
     HP: 10
     defend: 2.51
-    stamina: 0
+    damage: 50
+    stamina: 1
     useStamina: 0
     staminaUseMultiplier: 5
     timeBeforeStaminaRegenStarts: 3
