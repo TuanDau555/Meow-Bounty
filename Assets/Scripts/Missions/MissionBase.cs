@@ -14,6 +14,7 @@ public abstract class MissionBase : MonoBehaviour
     [Tooltip("Objectives to complete a mission")]
     [SerializeField] protected List<ObjectiveBase> objectives;
 
+    public bool ObjectivesCleared { get; private set; }
     public bool IsCompleted { get; private set; }
     public bool IsFailed { get; private set; }
 
@@ -22,6 +23,7 @@ public abstract class MissionBase : MonoBehaviour
     // Number of objectives that need to complete
     public int TargetProgress { get; private set; }
 
+    public event EventHandler<MissionBase> OnObjectivesCleared;
     public event EventHandler<MissionBase> OnMissionCompleted;
     public event EventHandler<MissionBase> OnMissionFailed;
     public event EventHandler<MissionBase> OnProgressChanged;
@@ -59,7 +61,7 @@ public abstract class MissionBase : MonoBehaviour
 
         if(CurrentProgress >= TargetProgress)
         {
-            CompleteMission();
+            ClearObjectives();
         }
     }
 
@@ -70,11 +72,20 @@ public abstract class MissionBase : MonoBehaviour
     protected virtual void CompleteMission()
     {
         if(IsCompleted) return;
+        if(!ObjectivesCleared) return;
 
         IsCompleted = true;
         OnMissionCompleted?.Invoke(this, this);
     }
 
+    public virtual void ClearObjectives()
+    {
+        if(ObjectivesCleared) return;
+
+        ObjectivesCleared = true;
+        OnObjectivesCleared?.Invoke(this, this);
+    }
+    
     protected virtual void FailMission()
     {
         if(IsFailed || IsCompleted) return;
@@ -88,6 +99,9 @@ public abstract class MissionBase : MonoBehaviour
         CurrentProgress = 0;
         IsCompleted = false;
     }
+
+    public void TriggerComplete() => CompleteMission();
+    public void TriggerFailed() => FailMission();
     
     #endregion
 }
