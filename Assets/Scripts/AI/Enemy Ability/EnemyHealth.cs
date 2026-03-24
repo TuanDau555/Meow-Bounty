@@ -70,6 +70,8 @@ public class EnemyHealth : NetworkBehaviour, IDamageable
         currentHealth.Value -= finalDamage;
 
         Debug.Log($"Enemy took {finalDamage} damage from {sourceClientId}");
+        Debug.Log($"Base damage: {damage}");
+        Debug.Log($"Base armor: {armor}");
 
         if(currentHealth.Value <= 0)
         {
