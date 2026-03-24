@@ -30,13 +30,41 @@ public struct FireResult : INetworkSerializable
     /// <summary>
     /// We give 0 if hit enviroment
     /// </summary>
-    public ulong hitTargetId;
+    public HitData[] hits;
 
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {
         serializer.SerializeValue(ref hasHit);
         serializer.SerializeValue(ref hitNormal);
         serializer.SerializeValue(ref hitPoint);
-        serializer.SerializeValue(ref hitTargetId);
+        
+        // Serialize the Hit Data Array
+        int length = hits != null ? hits.Length : 0;
+        serializer.SerializeValue(ref length);
+
+        if(serializer.IsReader)
+        {
+            hits = new HitData[length];
+        }
+
+        for(int i = 0; i < length; i++)
+        {
+            serializer.SerializeNetworkSerializable(ref hits[i]);
+        }
+        
+    }
+}
+
+public struct HitData : INetworkSerializable
+{
+    public ulong targetId;
+    public float damage;
+    public Vector3 hitPoint;
+    
+    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+    {
+        serializer.SerializeValue(ref targetId);
+        serializer.SerializeValue(ref damage);
+        serializer.SerializeValue(ref hitPoint);
     }
 }
