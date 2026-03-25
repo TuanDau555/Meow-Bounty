@@ -8,6 +8,7 @@ public class PlayFabManager : SingletonPersistent<PlayFabManager>
 {
     #region Key
     public const string PROFILE_KEY = "PLAYER_PROFILE";
+    private const string COIN_CODE = "CN";
     #endregion
 
     #region Parameter   
@@ -104,6 +105,45 @@ public class PlayFabManager : SingletonPersistent<PlayFabManager>
             }
             );
     }
+    #endregion
+    
+    #region Currency
+
+    public void AddCurrency(int amount)
+    {
+        var request = new AddUserVirtualCurrencyRequest
+        {
+            VirtualCurrency = COIN_CODE,
+            Amount = amount
+        };
+
+        PlayFabClientAPI.AddUserVirtualCurrency(request, OnModifyVirtualCurrencySuccess, 
+        error =>
+        {
+           Debug.LogError(error.GenerateErrorReport());
+        });
+    }
+
+    public void SubtractCurrency(int amount)
+    {
+        var request = new SubtractUserVirtualCurrencyRequest
+        {
+            VirtualCurrency = COIN_CODE,
+            Amount = amount
+        };
+
+        PlayFabClientAPI.SubtractUserVirtualCurrency(request, OnModifyVirtualCurrencySuccess, 
+        error =>
+        {
+           Debug.LogError(error.GenerateErrorReport());
+        });
+    }
+    
+    private void OnModifyVirtualCurrencySuccess(ModifyUserVirtualCurrencyResult result)
+    {
+        Debug.Log($"Currency Grant: {result.Balance}");
+    }
+    
     #endregion
 }
 

@@ -18,4 +18,17 @@ public class CharacterDatabaseSO : ScriptableObject
         
         return null;
     }
+
+    /// <summary>
+    /// Get all character available in SO
+    /// </summary>
+    /// <returns>Id of unique character</returns>
+    public CharacterDefinitionSO GetAllCharacter()
+    {
+        foreach(var character in characters)
+        {
+            Debug.Log($"Character: {character.id}");
+        }
+        return null;
+    }
 }
