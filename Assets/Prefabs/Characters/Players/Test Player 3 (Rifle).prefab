@@ -551,6 +551,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0c82b5b9e872d24abf04b676c49bbd3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterDefinitionSO: {fileID: 11400000, guid: 7d7bb7c1409459d45a2a6a7e3436c137,
+    type: 2}
   downedDuration: 20
   reviveZone: {fileID: 4270795799188185660}
 --- !u!114 &1716938568028760978

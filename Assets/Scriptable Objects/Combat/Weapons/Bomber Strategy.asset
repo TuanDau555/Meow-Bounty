@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7e825e3f3b9e5042b0f13c48dccdd0f, type: 3}
+  m_Name: Bomber Strategy
+  m_EditorClassIdentifier: 
+  projectileStats: {fileID: 11400000, guid: cc308eb7eeee66d42817d498528e52e8, type: 2}
+  explosionVFXPrefab: {fileID: 3784945155588612436, guid: b33d991b542eaae4bb87332955c73ce0,
+    type: 3}
