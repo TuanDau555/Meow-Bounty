@@ -7,7 +7,9 @@ public class NetworkHealth : NetworkBehaviour, IDamageable
 {
     #region Parameters
     
-    private const float maxHealth = 100f;
+    [Header("Character Stats")]
+    [SerializeField] private CharacterDefinitionSO characterDefinitionSO;
+
     [SerializeField] private float downedDuration = 20f;
     [SerializeField] private ReviveZone reviveZone;
     
@@ -42,7 +44,7 @@ public class NetworkHealth : NetworkBehaviour, IDamageable
     {
         if (IsServer)
         {
-            CurrentHealth.Value = maxHealth;
+            CurrentHealth.Value = characterDefinitionSO.characterStats.HP;
             GameEndManager.Instance.RegisterPlayer(this);
         }
 
@@ -109,8 +111,8 @@ public class NetworkHealth : NetworkBehaviour, IDamageable
 
         CurrentHealth.Value = Mathf.Max(0f, CurrentHealth.Value - damage);
         
-        Debug.Log($"[{OwnerClientId}] took {damage} damage from [{attackerId}] | HP: {CurrentHealth.Value}/{maxHealth}");
-
+        Debug.Log($"[{OwnerClientId}] took {damage} damage from [{attackerId}] | HP: {CurrentHealth.Value}/{characterDefinitionSO.characterStats.HP}");
+        Debug.Log($"Player {OwnerClientId} Health: {CurrentHealth.Value}");
         // Return to downed State when run out of heath
         if(CurrentHealth.Value <= 0f && State.Value == LifeState.Alive)
         {
@@ -188,7 +190,7 @@ public class NetworkHealth : NetworkBehaviour, IDamageable
         StopDownedTimer();
         
         // Restore a part of player's health
-        CurrentHealth.Value = maxHealth * 0.3f; // 30% HP
+        CurrentHealth.Value = characterDefinitionSO.characterStats.HP * 0.3f; // 30% HP
         
         // Change to Alive state
         State.Value = LifeState.Alive;
@@ -254,7 +256,7 @@ public class NetworkHealth : NetworkBehaviour, IDamageable
 
     #endregion
 
-    #region Get
+    #region GET/SET
     
     /// <summary>
     /// Timer remain to timer (for UI)
@@ -272,6 +274,9 @@ public class NetworkHealth : NetworkBehaviour, IDamageable
         if (!_isDownedTimerRunning || downedDuration <= 0f) return 0f;
         return 1f - (_downedTimer / downedDuration);
     }
+
+    public float GetCurrentHealth() => CurrentHealth.Value;
+    public float GetMaxHealth() => characterDefinitionSO.characterStats.HP;
     
     #endregion
     

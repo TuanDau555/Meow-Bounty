@@ -80,17 +80,19 @@ public class WeaponContext : NetworkBehaviour
 
     private void ApplyServerResult(FireResult result)
     {
-        if(!result.hasHit) return;
+        if(!result.hasHit || result.hits == null) return;
 
-        if(result.hitTargetId != 0) 
+        foreach(var hit in result.hits)
         {
-            NetworkObject target = NetworkManager.Singleton.SpawnManager.SpawnedObjects[result.hitTargetId];
+            if(hit.targetId == 0) continue; // hit Eviroment
 
-            // TODO: apply damage
-            // if (target.TryGetComponent<IDamageable>(out var dmg))
-            // {
-            //     dmg.TakeDamage(result.damage);
-            // }
+            if(!NetworkManager.Singleton.SpawnManager.SpawnedObjects
+                .TryGetValue(hit.targetId, out var netObj)) continue;
+
+            if(netObj.TryGetComponent<IDamageable>(out var damageable))
+            {
+                damageable.TakeDamage(hit.damage, OwnerClientId);
+            }
         }
     }
 
@@ -106,8 +108,13 @@ public class WeaponContext : NetworkBehaviour
     private void ApplyClientResult(FireResult result)
     {
         if(!result.hasHit) return;
+        
+        weaponStrategy.ExcuteClientEffect(result);
 
+        if(result.hits == null) return;
+        
         // TODO: spawn Hit effect
+
         
     }
 

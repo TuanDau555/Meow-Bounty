@@ -7,6 +7,9 @@ public class GameEndManager : SingletonNetwork<GameEndManager>
 {
     #region Parameters
 
+    [Header("Reference")]
+    [SerializeField] private MissionManager missionManager;
+    
     private HashSet<ulong> _playerInRoom = new HashSet<ulong>();
     private bool _gameEnded = false;
 
@@ -76,19 +79,19 @@ public class GameEndManager : SingletonNetwork<GameEndManager>
 
         if(_playerInRoom.Count >= alivePlayer && alivePlayer > 0)
         {
-            EndGame(true);
+            missionManager.NotifyMissionCompleted();
         }
     }
 
     private void CheckFailedCondition()
     {
-        int alivePlayer = GetAlivePlayerCount();
+        if(missionManager == null) return;
 
-        if(alivePlayer <= 0)
-        {
-            Debug.Log("Failed Condition met");
-            EndGame(false);
-        }
+        int alivePlayer = GetAlivePlayerCount();
+        if(alivePlayer > 0) return;
+
+        missionManager.NotifyMissionFailed();
+        
     }
 
     private int GetAlivePlayerCount()

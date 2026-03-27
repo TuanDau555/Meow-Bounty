@@ -42,6 +42,13 @@ public interface IGameLobbyService
     Task UpdatePlayerCharacterAsync(string playerId, string characterId);
 
     /// <summary>
+    /// Update the choosing map that player has just change
+    /// </summary>
+    /// <param name="sceneName">The name of selected scene</param>
+    /// <returns>Selected map</returns>
+    Task UpdateSelectedMapAsync(string sceneName);
+
+    /// <summary>
     /// Start keep room alive
     /// </summary>
     void StartHeartbeat();

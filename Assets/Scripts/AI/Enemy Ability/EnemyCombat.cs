@@ -29,9 +29,11 @@ public class EnemyCombat : NetworkBehaviour
 
         var health = target.GetTransform().GetComponent<NetworkHealth>();
 
+        
         if(health != null)
         {
             health.TakeDamage(damage, NetworkObjectId);
+            Debug.Log($"Enemy {gameObject.name} attack {health.gameObject.name} deal {damage}");
         }
     }
     #endregion

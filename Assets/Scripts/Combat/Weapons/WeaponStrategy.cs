@@ -14,6 +14,6 @@ public abstract class WeaponStrategy : ScriptableObject
     // client prediction
     public virtual void ExecuteClientPredition(FireContext context){}
 
-    public float BaseDamage { get ; private set; } = 5f;
-    public float Range { get; private set; } = 10f;
+    public virtual void ExcuteClientEffect(FireResult result) {}
+
 }

@@ -18,10 +18,10 @@ MonoBehaviour:
   description: 
   characterPrefab: {fileID: 8271282784123907453, guid: 48d261bf65990634988e6c5a56c58d0e,
     type: 3}
-  previewPrefab: {fileID: 8421418390401627055, guid: 9f15fc5975e702a41a91cc663ff3c132,
+  previewPrefab: {fileID: 8421418390401627055, guid: b415bd587f1036d42b68927a9f555d27,
     type: 3}
   characterStats:
-    HP: 10
+    HP: 100
     defend: 2.51
     damage: 1
     stamina: 1

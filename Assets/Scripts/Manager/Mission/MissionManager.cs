@@ -13,8 +13,8 @@ public class MissionManager : NetworkBehaviour
     [SerializeField] private GameObject saveRoomDoor;
 
     // Net Variables
-    public NetworkVariable<int> CurrentObjectiveIndex = new NetworkVariable<int>();
-    public NetworkVariable<bool> IsMissionCompleted = new NetworkVariable<bool>();
+    [HideInInspector] public NetworkVariable<int> CurrentObjectiveIndex = new NetworkVariable<int>();
+    [HideInInspector] public NetworkVariable<bool> IsMissionCompleted = new NetworkVariable<bool>();
 
     public bool AllMissionCompleted { get; private set; }
 
@@ -26,6 +26,7 @@ public class MissionManager : NetworkBehaviour
     {
         if (IsServer)
         {
+            missionBase.OnObjectivesCleared += HandleObjectivesCleared;
             missionBase.OnMissionCompleted += HandleMissionCompleted;
             missionBase.OnMissionFailed += HandleMissionFailed;
             missionBase.OnProgressChanged += HandleProgressChanged;
@@ -41,6 +42,7 @@ public class MissionManager : NetworkBehaviour
     {
         if(missionBase != null)
         {
+            missionBase.OnObjectivesCleared -= HandleObjectivesCleared;
             missionBase.OnMissionCompleted -= HandleMissionCompleted;
             missionBase.OnMissionFailed -= HandleMissionFailed;
             missionBase.OnProgressChanged -= HandleProgressChanged;
@@ -49,9 +51,20 @@ public class MissionManager : NetworkBehaviour
         base.OnNetworkDespawn();
     }
 
+
     #endregion
 
     #region Events
+
+    private void HandleObjectivesCleared(object sender, MissionBase e)
+    {
+        Debug.Log("Objective cleared, unlocking save room");
+
+        AllMissionCompleted = true;
+        IsMissionCompleted.Value = true;
+        
+        saveRoomDoor.SetActive(true);
+    }
 
     private void HandleMissionCompleted(object sender, MissionBase e)
     {
@@ -64,6 +77,8 @@ public class MissionManager : NetworkBehaviour
         AllMissionCompleted = true;
         IsMissionCompleted.Value = true;
 
+        GameEndManager.Instance.EndGame(true);
+        
         UnlockSaveRoom();
     }
 
@@ -78,6 +93,11 @@ public class MissionManager : NetworkBehaviour
     private void HandleMissionFailed(object sender, MissionBase e)
     {
         Debug.Log("Mission Failed");
+
+        var reward = CalculateReward(false);
+
+        GrantRewardClientRpc(reward.softCurrency, reward.exp);
+
         GameEndManager.Instance.EndGame(false);
     }
 
@@ -91,6 +111,20 @@ public class MissionManager : NetworkBehaviour
         saveRoomDoor.SetActive(true);
     }
 
+    public void NotifyMissionFailed()
+    {
+        if(!IsServer) return;
+
+        missionBase.TriggerFailed();
+    }
+
+    public void NotifyMissionCompleted()
+    {
+        if(!IsServer) return;
+
+        missionBase.TriggerComplete();
+    }
+    
     private RewardData CalculateReward(bool isWin)
     {
         RewardData rewardData = new RewardData();

@@ -1,6 +1,7 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MissionUI : MonoBehaviour 
 {
@@ -12,6 +13,12 @@ public class MissionUI : MonoBehaviour
     [Space(10)]
     [Tooltip("What player need to do in this mission")]
     [SerializeField] private TextMeshProUGUI objectiveText;
+
+    [Tooltip("Objective State (Ex: Complete or not)")]
+    [SerializeField] private Image objectiveStateImage;
+    
+    [Tooltip("Sprite for Objective State (Complete)")]
+    [SerializeField] private Sprite completeSprite;
 
     private MissionManager _missionManager;
 
@@ -63,6 +70,7 @@ public class MissionUI : MonoBehaviour
         if(!newValue) return;
         
         objectiveText.text = missionObjectiveSO.missionCompleteText;
+        objectiveStateImage.sprite = completeSprite;
     }
 
     #endregion
