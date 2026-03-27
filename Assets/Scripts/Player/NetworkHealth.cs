@@ -256,7 +256,7 @@ public class NetworkHealth : NetworkBehaviour, IDamageable
 
     #endregion
 
-    #region Get
+    #region GET/SET
     
     /// <summary>
     /// Timer remain to timer (for UI)
@@ -274,6 +274,9 @@ public class NetworkHealth : NetworkBehaviour, IDamageable
         if (!_isDownedTimerRunning || downedDuration <= 0f) return 0f;
         return 1f - (_downedTimer / downedDuration);
     }
+
+    public float GetCurrentHealth() => CurrentHealth.Value;
+    public float GetMaxHealth() => characterDefinitionSO.characterStats.HP;
     
     #endregion
     
