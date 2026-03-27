@@ -18,10 +18,10 @@ MonoBehaviour:
   description: Blow everything away
   characterPrefab: {fileID: 8271282784123907453, guid: a44ed0904f6abf54b8192cd6e91d9643,
     type: 3}
-  previewPrefab: {fileID: 8252867841114933110, guid: d7a620a42de34774594aae01b3f3ad8d,
+  previewPrefab: {fileID: 8252867841114933110, guid: e7b1dddfca7dd634291beeb26709455c,
     type: 3}
   characterStats:
-    HP: 10
+    HP: 200
     defend: 2.51
     damage: 50
     stamina: 1

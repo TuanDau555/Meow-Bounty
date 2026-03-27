@@ -27,7 +27,7 @@ public class CharacterDefinitionSO : ScriptableObject
     public class CharacterStats
     {
         [Header("Basic stats")]
-        [Range(1, 10)]
+        [Range(1, 9999)]
         public float HP;
 
         [Range(1, 10)]

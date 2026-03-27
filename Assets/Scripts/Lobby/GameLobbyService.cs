@@ -63,6 +63,14 @@ public class GameLobbyService : IGameLobbyService
                             DataObject.VisibilityOptions.Public,
                             LobbyState.Waiting.ToString()
                         )
+                    },
+                    // Default Map when create room
+                    {
+                        LobbyKeys.SELECTED_MAP,
+                        new DataObject(
+                            DataObject.VisibilityOptions.Public,
+                            MapSelectionManager.Instance.SelectedMap.sceneName
+                        )
                     }
                 }
             };
@@ -382,6 +390,11 @@ public class GameLobbyService : IGameLobbyService
                 _ugsLobby = latestLobby;
                 UpdateLocalLobby(_ugsLobby);
 
+                if(_ugsLobby.Data.TryGetValue(LobbyKeys.SELECTED_MAP, out var mapData))
+                {
+                    MapSelectionManager.Instance.SetMapBySceneName(mapData.Value);
+                }
+                
                 if(CurrentLobby.lobbyState == LobbyState.Starting)
                 {
                     _ = HandleGameStarting();
@@ -591,6 +604,38 @@ public class GameLobbyService : IGameLobbyService
         
         OnLobbyLeft?.Invoke(this, EventArgs.Empty);
     }
+
+    public async Task UpdateSelectedMapAsync(string sceneName)
+    {
+        if(!_hostAuthority.IsHost) return;
+        if(_ugsLobby == null) return;
+        
+        try
+        {
+            await LobbyService.Instance.UpdateLobbyAsync(
+                _ugsLobby.Id,
+                new UpdateLobbyOptions
+                {
+                    Data = new Dictionary<string, DataObject>
+                    {
+                        {
+                            LobbyKeys.SELECTED_MAP,
+                            new DataObject(
+                                DataObject.VisibilityOptions.Public,
+                                sceneName
+                            )
+                        }
+                    }
+                }
+            );
+        }
+        catch (LobbyServiceException e)
+        {
+            
+            Debug.LogError($"Update Selected Map Failed: {e}");
+        }
+    }
+    
     #endregion
 
     #region Start Game Handle
@@ -642,8 +687,9 @@ public class GameLobbyService : IGameLobbyService
     {
         Debug.Log("Server started → loading scene");
 
-        // NetworkManager.Singleton.SceneManager.LoadScene("Lv1", LoadSceneMode.Single);
-        SceneLoader.LoadNetworkScene("Lv1");
+        string sceneToLoad = MapSelectionManager.Instance.SelectedMap.sceneName;
+
+        SceneLoader.LoadNetworkScene(sceneToLoad);
 
         NetworkManager.Singleton.OnServerStarted -= HandleServerStarted;
     }
@@ -716,7 +762,7 @@ public class GameLobbyService : IGameLobbyService
     
     #endregion
 
-    #region Map Data
+    #region Mapping Data
     public LobbyData MapToLobbyData(Lobby ugsLobby)
     {
         var data = new LobbyData
