@@ -1,6 +1,6 @@
 
 /// <summary>
-/// Those keys use for asign data to UI 
+/// Those keys use for assign data to UI 
 /// </summary>
 public static class LobbyKeys
 {
@@ -11,6 +11,7 @@ public static class LobbyKeys
 
     // Lobby Data
     public const string LOBBY_STATE = "state";
+    public const string SELECTED_MAP = "SELECTED_MAP";
 
     // Relay
     public const string RELAY_JOIN_CODE = "RELAY_JOIN_CODE";
