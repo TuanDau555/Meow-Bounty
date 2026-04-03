@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89af1531afb7ad247a6ff0a453d29942, type: 3}
+  m_Name: Cat Flame Definition SO
+  m_EditorClassIdentifier: 
+  id: Cat_03
+  displayName: Cat Flame
+  icon: {fileID: 0}
+  description: 
+  characterPrefab: {fileID: 8271282784123907453, guid: 393700c31e5c0794f87fd32e7f9bb58e,
+    type: 3}
+  previewPrefab: {fileID: 8421418390401627055, guid: b415bd587f1036d42b68927a9f555d27,
+    type: 3}
+  characterStats:
+    HP: 100
+    defend: 2.51
+    damage: 36.5
+    stamina: 1
+    useStamina: 0
+    staminaUseMultiplier: 5
+    timeBeforeStaminaRegenStarts: 3
+    staminaIncrement: 2
+    staminaTimeIncrement: 0.1
+    walkSpeed: 5
+    sprintSpeed: 10
