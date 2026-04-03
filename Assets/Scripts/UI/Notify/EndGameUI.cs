@@ -50,8 +50,8 @@ public class EndGameUI : Singleton<EndGameUI>
     public void Show(bool isSuccess)
     {
         endPanelGroup.alpha = 1;
-        endPanelGroup.interactable = isSuccess;
-        endPanelGroup.blocksRaycasts = isSuccess;
+        endPanelGroup.interactable = true;
+        endPanelGroup.blocksRaycasts = true;
 
         resultText.text = isSuccess ? "MISSION COMPLETE" : "MISSION FAILED";
 
