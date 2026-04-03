@@ -17,7 +17,11 @@ public class PlayerInGameUIController : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if(!IsOwner) return;
+        if (!IsOwner)
+        {
+            playerInfoHUD.gameObject.SetActive(false);
+            return;
+        }
 
         _networkHealth = GetComponent<NetworkHealth>();
 
@@ -38,7 +42,14 @@ public class PlayerInGameUIController : NetworkBehaviour
 
         playerInfoHUD.SetMaxHealth(_networkHealth.GetMaxHealth());
         _networkHealth.OnHealthChanged += HandleHealthChanged;
-        playerInfoHUD.SetHealth(_networkHealth.GetCurrentHealth());
+
+        float currentHealth = _networkHealth.GetCurrentHealth();
+        
+        if(currentHealth > 0)
+        {
+            playerInfoHUD.SetHealth(currentHealth);
+        }
+
     }
 
     #endregion

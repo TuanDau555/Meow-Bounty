@@ -4,7 +4,7 @@ using UnityEngine.VFX;
 
 /// <summary>
 /// The context of weapon, handle the fire input and output, and call the strategy to execute the logic
-/// In short, it will say who fire, where they fire, do it need to sycne
+/// In short, it will say who fire, where they fire, does it need to sycn
 /// </summary>
 public class WeaponContext : NetworkBehaviour
 {
@@ -13,6 +13,10 @@ public class WeaponContext : NetworkBehaviour
     [Header("Strategy")]
     [SerializeField] private WeaponStrategy weaponStrategy;
 
+    [Header("Flame")]
+    [Tooltip("This is only need for flame gun")]
+    [SerializeField] private FlameVFXController flameVFXController;
+
     // TODO: Need a scrtiptable object for those type of stats
     [SerializeField] private float fireRate = 5f;
 
@@ -20,11 +24,24 @@ public class WeaponContext : NetworkBehaviour
     [SerializeField] private Animator animator;
     
     private float _lastFireTime;
+    private bool _isFiring = false;
+    private float _nextFlameTickTime;
 
+    #endregion
+
+    #region Execute
+
+    public override void OnNetworkDespawn()
+    {
+        flameVFXController?.StopFlame();
+
+        base.OnNetworkDespawn();
+    }
+    
     #endregion
     
     #region Fire
-    public void Fire(Vector3 origin, Vector3 direction)
+    private void Fire(Vector3 origin, Vector3 direction)
     {
         if(!CanFire()) return;
         
@@ -66,6 +83,73 @@ public class WeaponContext : NetworkBehaviour
         };
     }
 
+    public void StartFire(Vector3 origin, Vector3 direction)
+    {
+        _isFiring = true;
+
+        flameVFXController?.StartFlame();
+
+        Fire(origin, direction);
+        
+        if(IsServer)
+        {
+            StartFlameClientRpc();
+        }
+        else
+        {
+            StartFlameServerRpc();
+        }
+    }
+
+    public void StopFire()
+    {
+        _isFiring = false;
+
+        flameVFXController?.StopFlame();
+        
+        if(IsServer)
+        {
+            StopFlameClientRpc();
+        }
+        else
+        {
+            StopFlameServerRpc();
+        }
+    }
+
+    public void HoldFire(Vector3 origin, Vector3 direction)
+    {
+        if(Time.time >= _nextFlameTickTime)
+        {
+            Fire(origin, direction);
+            _nextFlameTickTime = Time.time + 1f / fireRate;
+        }        
+    }
+
+    #endregion
+
+    #region Flame Gun
+
+    [ServerRpc]
+    private void StartFlameServerRpc() => StartFlameClientRpc();
+
+    [ServerRpc]
+    private void StopFlameServerRpc() => StopFlameClientRpc();
+
+    [ClientRpc]
+    private void StartFlameClientRpc()
+    {
+        if(IsOwner) return;
+        flameVFXController?.StartFlame();
+    }
+
+    [ClientRpc]
+    private void StopFlameClientRpc()
+    {
+        if(IsOwner) return;
+        flameVFXController?.StopFlame();
+    }
+    
     #endregion
     
     #region Server

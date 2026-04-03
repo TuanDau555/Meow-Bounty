@@ -50,6 +50,8 @@ public class NetworkHealth : NetworkBehaviour, IDamageable
 
         CurrentHealth.OnValueChanged += HandleHealthChanged;
         State.OnValueChanged += HandleStateChanged;
+
+        OnHealthChanged?.Invoke(this, CurrentHealth.Value);
     }
 
     public override void OnNetworkDespawn()
@@ -97,6 +99,14 @@ public class NetworkHealth : NetworkBehaviour, IDamageable
                 }
                 break;
         }
+    }
+
+    public void TryHealth(float amount)
+    {
+        if(!IsServer) return;
+        if(IsDead || IsDowned) return;
+
+        CurrentHealth.Value = Mathf.Min(CurrentHealth.Value + amount, characterDefinitionSO.characterStats.HP);
     }
 
     #endregion

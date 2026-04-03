@@ -25,7 +25,17 @@ public class PlayerCombatController : MonoBehaviour
 
         if (_inputManager.IsFiringPressed())
         {
-            weaponContext.Fire(point.position, cameraTransform.forward);
+            weaponContext.StartFire(point.position, cameraTransform.forward);
+        }
+
+        if (_inputManager.IsFiringHeld())
+        {
+            weaponContext.HoldFire(point.position, cameraTransform.forward);
+        }
+
+        if (_inputManager.IsFiringReleased())
+        {
+            weaponContext.StopFire();
         }
     }
 }
