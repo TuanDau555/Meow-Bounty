@@ -7,6 +7,7 @@ public class PlayerStatsSO : ScriptableObject
     public LookStats lookStats;
     public HeadBobStats headBobStats;
     public InteractStats interactStats;
+    public float gravity;
     
     #region Look
     [Serializable]

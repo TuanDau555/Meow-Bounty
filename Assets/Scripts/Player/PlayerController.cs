@@ -80,6 +80,7 @@ public class PlayerController : NetworkBehaviour
     private float _mouseSen;
     private float _mouseLimitNormal;
     private float _mouseLimnitWhenDowned;
+    private float _verticalVelocity = 0f;
     private float _walkSpeed;
     private float _sprintSpeed;
     private Vector3 _moveDirection;
@@ -360,15 +361,28 @@ public class PlayerController : NetworkBehaviour
     // Handle client tick: send input to server and process movement locally
     private StatePayload ProcessMovement(InputPayload input)
     {
+        float deltaTime = _networkTimer.MinTimeBetweenTicks;
+        
         Vector3 forward = Quaternion.Euler(0, input.yaw, 0) * Vector3.forward;
         Vector3 right = Quaternion.Euler(0, input.yaw, 0) * Vector3.right;
 
         Vector3 moveDirection = (forward * input.inputVector.y) + (right * input.inputVector.x);
         moveDirection.Normalize();
 
-        Vector3 velocity = moveDirection * _walkSpeed;
+        if(_playerController.isGrounded)
+        {
+            if(_verticalVelocity < 0f)
+                _verticalVelocity = -2f; // Get player back to the ground
+        }
+        else
+        {
+            _verticalVelocity += playerStats.gravity * deltaTime;
+        }
+
+        Vector3 finalVelocity = moveDirection * _walkSpeed;
+        finalVelocity.y = _verticalVelocity;
         
-        _playerController.Move(moveDirection * _walkSpeed * _networkTimer.MinTimeBetweenTicks);
+        _playerController.Move(finalVelocity * deltaTime);
 
         Quaternion rotation = Quaternion.Euler(0, input.yaw, 0);
         transform.rotation  = rotation;
@@ -378,7 +392,7 @@ public class PlayerController : NetworkBehaviour
             tick = input.tick,
             position = transform.position,
             quaternion = transform.rotation,
-            velocity = velocity
+            velocity = finalVelocity
         };
 
         return state;
