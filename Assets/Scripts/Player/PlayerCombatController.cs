@@ -1,6 +1,6 @@
 using UnityEngine;
-
-public class PlayerCombatController : MonoBehaviour
+using Unity.Netcode;
+public class PlayerCombatController : NetworkBehaviour
 {
     [SerializeField] private WeaponContext weaponContext;
     [SerializeField] private Transform firePoint;
@@ -21,6 +21,10 @@ public class PlayerCombatController : MonoBehaviour
 
     private void HandleFire(Transform point)
     {
+
+        if (!IsSpawned || !IsOwner) return;
+        if (weaponContext == null) return;
+        
         if(!weaponContext.IsOwner) return;
 
         if (_inputManager.IsFiringPressed())

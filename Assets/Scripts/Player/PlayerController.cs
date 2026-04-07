@@ -498,6 +498,8 @@ public class PlayerController : NetworkBehaviour
     private void HandleClientTick()
     {
         if(!IsClient) return;
+        if (!IsSpawned || !IsOwner) return;
+        if (NetworkManager.Singleton == null) return;
 
         var currentTick = _networkTimer.CurrentTick;;
         var bufferIndex = currentTick % k_bufferSize;

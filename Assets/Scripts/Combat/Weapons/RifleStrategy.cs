@@ -54,12 +54,18 @@ public class RifleStrategy : WeaponStrategy
 
         if(muzzleFlashVFXPrefab != null)
         {
-            GameObject muzzleFlash = Instantiate(
-                muzzleFlashVFXPrefab,
-                context.origin,
+            // GameObject muzzleFlash = Instantiate(
+            //     muzzleFlashVFXPrefab,
+            //     context.origin,
+            //     baseRotation * offset
+            // );
+            var muzzleFlash = HybridPool.Spawn(
+                muzzleFlashVFXPrefab, 
+                context.origin, 
                 baseRotation * offset
-            );
-            Destroy(muzzleFlash, muzzleFlashDur);
+                );
+            
+            HybridPool.Despawn(muzzleFlash, muzzleFlashDur);
         }
     }
 }

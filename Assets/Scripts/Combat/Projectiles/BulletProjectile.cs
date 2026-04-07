@@ -29,8 +29,11 @@ public class BulletProjectile : ProjectileBase
 
         if(hitEffectPrefab == null) return;
 
-        var vfx = Instantiate(hitEffectPrefab, position, Quaternion.identity);
-        Destroy(vfx, effectLifeTime);
+        // var vfx = Instantiate(hitEffectPrefab, position, Quaternion.identity);
+        // Destroy(vfx, effectLifeTime);
+
+        var vfx = HybridPool.Spawn(hitEffectPrefab, position, Quaternion.identity);
+        HybridPool.Despawn(vfx, effectLifeTime);
         // TODO: Hit sound
 
     }
