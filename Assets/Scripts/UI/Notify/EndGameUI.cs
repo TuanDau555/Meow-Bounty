@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
@@ -72,15 +74,41 @@ public class EndGameUI : Singleton<EndGameUI>
         expEarnText.text = $"+{exp}xp";
     }
 
-    private void OnClickBackToMenu()
+    private async void OnClickBackToMenu()
     {
         if(_isLoading) return;
         _isLoading = true;
+                
+        Time.timeScale = 1;
+
+        // Despawn all the objects before shutdown
+        if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsServer)
+        {
+            var spawnedObjects = new List<NetworkObject>(
+                NetworkManager.Singleton.SpawnManager.SpawnedObjectsList
+            );
+
+            foreach (var netObj in spawnedObjects)
+            {
+                if (netObj == null) continue;
+                if (netObj.gameObject == NetworkManager.Singleton.gameObject) continue;
+                netObj.Despawn(true);
+            }
+        }
+
+        //  wait to despawn then we shut down
+        await Task.Delay(300);
 
         NetworkManager.Singleton.Shutdown();
-        
+
+        //  Wait for shutting down completely
+        while (NetworkManager.Singleton != null && NetworkManager.Singleton.ShutdownInProgress)
+        {
+            await Task.Yield();
+        }
+
         SceneManager.LoadScene("Main Menu Tuan");
-        Time.timeScale = 1;
+
     }
     
     #endregion

@@ -48,6 +48,7 @@ public class GameLobbyService : IGameLobbyService
     #region Lobby Interaction
     public async Task CreateLobbyAsync(string lobbyName, int maxPlayers, CreateLobbyOptions options)
     {
+        _relayPrepared = false;
         try
         {
             // Configure lobby: Init state is alway in waiting state
@@ -187,6 +188,8 @@ public class GameLobbyService : IGameLobbyService
             Debug.LogError("Join Lobby Failed");
         }
 
+        _relayPrepared = false;
+
         try
         {
             _ugsLobby = await LobbyService.Instance.JoinLobbyByIdAsync(
@@ -252,6 +255,12 @@ public class GameLobbyService : IGameLobbyService
 
     public async Task LeaveLobbyAsync()
     {
+        if(NetworkManager.Singleton != null)
+        {
+            NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnectedCallback;
+            NetworkManager.Singleton.OnServerStarted -= HandleServerStarted;
+        }
+        
         try
         {    
             if(_ugsLobby == null) return;
