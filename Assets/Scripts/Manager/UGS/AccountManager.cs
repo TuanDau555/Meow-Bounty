@@ -17,6 +17,20 @@ public class AccountManager
     {
         _tcs = new TaskCompletionSource<string>();
 
+        // if there is already in session so get token immediately, no need to Sign in again
+        if (PlayerAccountService.Instance.IsSignedIn)
+        {
+            string existingToken = PlayerAccountService.Instance.AccessToken;
+
+            if(!string.IsNullOrEmpty(existingToken))
+            {
+                return existingToken;
+            }
+
+            // But if the token is expired, we need to sign out first
+            PlayerAccountService.Instance.SignOut();
+        }
+        
         PlayerAccountService.Instance.SignedIn += OnSignedIn;
         try
         {

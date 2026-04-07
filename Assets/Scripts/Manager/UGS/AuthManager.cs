@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Unity.Services.Authentication;
+using Unity.Services.Authentication.PlayerAccounts;
 using Unity.Services.Core;
 using UnityEngine;
 
@@ -160,9 +161,15 @@ public class AuthManager : SingletonPersistent<AuthManager>
 
         try
         {
-            AuthenticationService.Instance.SignOut();
+            if (PlayerAccountService.Instance.IsSignedIn)
+            {
+                PlayerAccountService.Instance.SignOut();
+            }
+            
+            AuthenticationService.Instance.SignOut(true);
             PlayerId = null;
             State = AuthState.None;
+            IsReady = false;
 
             Debug.Log("Signed out successfully");
 

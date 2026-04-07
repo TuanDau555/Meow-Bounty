@@ -4,7 +4,7 @@ public class InputManager : Singleton<InputManager>
 {
     private InputSystem inputSystem;
 
-    #region Excute
+    #region Execute
     protected override void Awake()
     {
         base.Awake();
@@ -38,6 +38,8 @@ public class InputManager : Singleton<InputManager>
     /// Player pressed tab button
     /// </summary>
     public bool IsSwitchPress() => inputSystem.Player.Interact.IsPressed();
+
+    public bool IsPausedGame() => inputSystem.Player.Pause.IsPressed();
     
     #endregion
 }
