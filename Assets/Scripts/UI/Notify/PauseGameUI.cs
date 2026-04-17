@@ -83,6 +83,7 @@ public class PauseGameUI : Singleton<PauseGameUI>
             await Task.Yield();
         }
 
+        await VivoxManager.Instance.LeaveChannelAsync();
         SceneManager.LoadScene("Main Menu Tuan");
     }
 

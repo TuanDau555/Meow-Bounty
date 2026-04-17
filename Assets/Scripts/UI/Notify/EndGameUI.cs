@@ -106,7 +106,7 @@ public class EndGameUI : Singleton<EndGameUI>
         {
             await Task.Yield();
         }
-
+        await VivoxManager.Instance.LeaveChannelAsync();
         SceneManager.LoadScene("Main Menu Tuan");
 
     }
