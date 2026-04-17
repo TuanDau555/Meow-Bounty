@@ -813,7 +813,7 @@ public class GameLobbyService : IGameLobbyService
                characterId = player.Data.
                             TryGetValue(LobbyKeys.CHARACTER_ID, out var charId) 
                                 ? charId.Value 
-                                : "Cat_01",
+                                : "rifle",
 
                isHost = player.Id == ugsLobby.HostId,
  
