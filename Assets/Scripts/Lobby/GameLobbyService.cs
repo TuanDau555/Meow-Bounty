@@ -91,6 +91,8 @@ public class GameLobbyService : IGameLobbyService
 
             // Start checking if there any player join the room to update the UI
             StartLobbyPolling();
+
+            await VivoxManager.Instance.JoinGroupChannelAsync(_ugsLobby.Id);
         } 
         catch(LobbyServiceException e)
         {
@@ -203,6 +205,8 @@ public class GameLobbyService : IGameLobbyService
             // Update lobby data if there someone join
             UpdateLocalLobby(_ugsLobby);
             StartLobbyPolling();
+
+            await VivoxManager.Instance.JoinGroupChannelAsync(_ugsLobby.Id);
         }
         catch (LobbyServiceException e)
         {
@@ -288,6 +292,8 @@ public class GameLobbyService : IGameLobbyService
             _ugsLobby = null;
             CurrentLobby = null;
 
+            await VivoxManager.Instance.LeaveChannelAsync();
+            
             OnLobbyLeft?.Invoke(this, EventArgs.Empty);
         } catch(LobbyServiceException e)
         {
@@ -574,7 +580,12 @@ public class GameLobbyService : IGameLobbyService
         CurrentLobby = MapToLobbyData(ugsLobby);
 
         Debug.Log($"Lobby state changed to: {CurrentLobby.lobbyState}");
-
+        
+        if(CurrentLobby.lobbyState != LobbyState.Waiting && !_hostAuthority.IsHost)
+        {
+            Feedback.Instance?.ShowLobbyState(CurrentLobby.lobbyState.ToString());
+        }
+        
         _hostAuthority.UpdateHost(ugsLobby.HostId);
         
         OnLocalLobbyUpdated?.Invoke(this, CurrentLobby);
@@ -660,6 +671,9 @@ public class GameLobbyService : IGameLobbyService
         while(countDown > 0)
         {
             Debug.Log($"Game starts in: {countDown}");
+
+            Feedback.Instance?.ShowLobbyState(countDown.ToString());
+            
             await Task.Delay(1000); // 1s
             countDown--;
         }
