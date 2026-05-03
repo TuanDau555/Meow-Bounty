@@ -4,6 +4,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(NetworkObject))]
 [RequireComponent(typeof(EnemyHealth))]
+[RequireComponent(typeof(NetworkPrefabId))]
 public class Enemy : NetworkBehaviour
 {
     #region Parameters

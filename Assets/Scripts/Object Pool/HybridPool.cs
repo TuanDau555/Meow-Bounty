@@ -85,6 +85,19 @@ public static class HybridPool
         if (!networkPools.ContainsKey(id))
             networkPools[id] = new Queue<NetworkObject>();
 
+        // Remove objects that has been destroy in the queue
+        while(!networkPools.ContainsKey(id))
+        {
+            var candidate = networkPools[id].Peek();
+
+            if(candidate == null || candidate.gameObject == null)
+            {
+                networkPools[id].Dequeue(); // Remote that object to prevent null raise
+                continue;
+            }
+            break; // object has verified
+        }
+        
         NetworkObject obj;
 
         if (networkPools[id].Count > 0)
@@ -117,5 +130,23 @@ public static class HybridPool
         networkPools[id].Enqueue(netObj);
     }
 
+    public static void ClearNetworkPool()
+    {
+        foreach(var queue in networkPools.Values)
+        {
+            while(queue.Count > 0)
+            {
+                var obj = queue.Dequeue();
+
+                if(obj != null)
+                {
+                    Object.Destroy(obj.gameObject);
+                }
+            }
+        }
+
+        networkPools.Clear();
+    }
+    
     #endregion
 }

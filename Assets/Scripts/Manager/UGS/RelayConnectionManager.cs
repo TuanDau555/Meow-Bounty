@@ -45,11 +45,18 @@ public class RelayConnectionManager : SingletonPersistent<RelayConnectionManager
             // Doesn't count Host as player in room so I minus 1
             Allocation allocation = await RelayService.Instance.CreateAllocationAsync(maxPlayers - 1);
 
+            string connectionType = GetConnectionType();
+            
             _currentJointCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
             
+    #if UNITY_WEBGL && !UNITY_EDITOR
+            _transport.UseWebSockets = true;
+    #endif
+
             // Protocol and server set up
-            RelayServerData relayServerData = new RelayServerData(allocation, "dtls");
+            RelayServerData relayServerData = new RelayServerData(allocation, connectionType);
             _transport.SetRelayServerData(relayServerData);
+            
             
             return  _currentJointCode;
         }
@@ -70,6 +77,11 @@ public class RelayConnectionManager : SingletonPersistent<RelayConnectionManager
         NetworkManager.Singleton.StartHost();
     }
 
+    /// <summary>
+    /// Basic Netcode will decline remote player to connect at default so we give them the approval
+    /// </summary>
+    /// <param name="request">Connected to Relay</param>
+    /// <param name="response">Give remote player permission to join</param>
     private void ApprovalCheck(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
     {
         string ugsId = System.Text.Encoding.UTF8.GetString(request.Payload);
@@ -97,12 +109,18 @@ public class RelayConnectionManager : SingletonPersistent<RelayConnectionManager
     {
         try
         {
+            string connectionType = GetConnectionType();
             _currentJointCode = joinCode;
 
             JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
 
-            RelayServerData relayServerData = new RelayServerData(joinAllocation, "dtls");
+    #if UNITY_WEBGL && !UNITY_EDITOR
+            _transport.UseWebSockets = true;
+    #endif
+
+            RelayServerData relayServerData = new RelayServerData(joinAllocation, connectionType);
             _transport.SetRelayServerData(relayServerData);
+            
             
             Debug.Log("[Relay] Client joined allocation");
             return true;
@@ -122,6 +140,19 @@ public class RelayConnectionManager : SingletonPersistent<RelayConnectionManager
         NetworkManager.Singleton.NetworkConfig.ConnectionData = payload;
         
         NetworkManager.Singleton.StartClient();        
+    }
+    
+    #endregion
+
+    #region Connection Type
+
+    private string GetConnectionType()
+    {
+    #if UNITY_WEBGL && !UNITY_EDITOR
+        return "wss";
+    #else
+        return "dtls";
+    #endif
     }
     
     #endregion

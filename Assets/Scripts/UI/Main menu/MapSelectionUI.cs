@@ -23,7 +23,7 @@ public class MapSelectionUI : MonoBehaviour
         previousBtn.onClick.AddListener(MapSelectionManager.Instance.Previous);
         MapSelectionManager.Instance.OnMapChanged += RefreshUI;
 
-        bool isHost = ServiceLocator.GameLobbyService.HostAuthority.IsHost;
+        bool isHost = ServiceLocator.GameLobbyService.GetHostAuthority().IsHost;
         nextBtn.gameObject.SetActive(isHost);
         previousBtn.gameObject.SetActive(isHost);
 

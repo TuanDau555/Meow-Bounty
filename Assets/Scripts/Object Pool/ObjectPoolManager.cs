@@ -16,6 +16,9 @@ public class ObjectPoolManager : MonoBehaviour
     // This contain all the sound fx is created 
     private static GameObject _soundFXEmpty;
 
+    // This contain all the sound fx is created 
+    private static GameObject _chatEmpty;
+
     // Pool from the prefab
     private static Dictionary<GameObject, ObjectPool<GameObject>> _objectPools;
 
@@ -53,6 +56,9 @@ public class ObjectPoolManager : MonoBehaviour
 
         _soundFXEmpty = new GameObject("Sound FX Object Pool");
         _soundFXEmpty.transform.SetParent(_emptyHolder.transform);
+        
+        _chatEmpty = new GameObject("Chat Object Pool");
+        _chatEmpty.transform.SetParent(_emptyHolder.transform);
 
         // If you want the object alive through use could use _addToDontDestroyOnLoad parameters
     }
@@ -171,6 +177,8 @@ public class ObjectPoolManager : MonoBehaviour
             
             case PoolType.SoundFX:
                 return _soundFXEmpty;
+            case PoolType.Chat:
+                return _chatEmpty;
             
             default:
                 return null;
@@ -321,5 +329,6 @@ public class ObjectPoolManager : MonoBehaviour
 public enum PoolType
 {
     GameObjects,
-    SoundFX
+    SoundFX,
+    Chat
 }

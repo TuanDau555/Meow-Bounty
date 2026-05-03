@@ -54,6 +54,7 @@ public class EndGameUI : Singleton<EndGameUI>
         endPanelGroup.alpha = 1;
         endPanelGroup.interactable = true;
         endPanelGroup.blocksRaycasts = true;
+        InputManager.Instance.DisableFiring();
 
         resultText.text = isSuccess ? "MISSION COMPLETE" : "MISSION FAILED";
 
@@ -76,6 +77,8 @@ public class EndGameUI : Singleton<EndGameUI>
 
     private async void OnClickBackToMenu()
     {
+        await VivoxManager.Instance.LeaveChannelAsync();
+
         if(_isLoading) return;
         _isLoading = true;
                 
@@ -106,7 +109,6 @@ public class EndGameUI : Singleton<EndGameUI>
         {
             await Task.Yield();
         }
-        await VivoxManager.Instance.LeaveChannelAsync();
         SceneManager.LoadScene("Main Menu Tuan");
 
     }

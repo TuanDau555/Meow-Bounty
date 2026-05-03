@@ -19,7 +19,7 @@ public class MapSelectionManager : Singleton<MapSelectionManager>
     
     public void Next()
     {
-        if(!ServiceLocator.GameLobbyService.HostAuthority.IsHost) return;
+        if(!ServiceLocator.GameLobbyService.GetHostAuthority().IsHost) return;
         
         _currentIndex = (_currentIndex + 1) % mapSelectionSO.maps.Count;
         OnMapChanged?.Invoke(SelectedMap);
@@ -30,7 +30,7 @@ public class MapSelectionManager : Singleton<MapSelectionManager>
 
     public void Previous()
     {
-        if(!ServiceLocator.GameLobbyService.HostAuthority.IsHost) return;
+        if(!ServiceLocator.GameLobbyService.GetHostAuthority().IsHost) return;
         
         _currentIndex--;
         if(_currentIndex < 0)

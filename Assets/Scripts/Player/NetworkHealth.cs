@@ -12,6 +12,8 @@ public class NetworkHealth : NetworkBehaviour, IDamageable
 
     [SerializeField] private float downedDuration = 20f;
     [SerializeField] private ReviveZone reviveZone;
+
+    private PlayerAudioController _playerAudioController;
     
     // Flag timer variables
     private float _downedTimer = 0f;
@@ -40,6 +42,11 @@ public class NetworkHealth : NetworkBehaviour, IDamageable
 
     #region Execute
 
+    private void Awake()
+    {
+        _playerAudioController = GetComponent<PlayerAudioController>();
+    }
+    
     public override void OnNetworkSpawn()
     {
         if (IsServer)
@@ -119,15 +126,17 @@ public class NetworkHealth : NetworkBehaviour, IDamageable
         if(IsDead) return;
         if(IsDowned) return;
 
-        CurrentHealth.Value = Mathf.Max(0f, CurrentHealth.Value - damage);
+        float finalDamage = Mathf.Max(damage - characterDefinitionSO.characterStats.defend, 0);
         
-        Debug.Log($"[{OwnerClientId}] took {damage} damage from [{attackerId}] | HP: {CurrentHealth.Value}/{characterDefinitionSO.characterStats.HP}");
-        Debug.Log($"Player {OwnerClientId} Health: {CurrentHealth.Value}");
+        CurrentHealth.Value = Mathf.Max(0f, CurrentHealth.Value - finalDamage);
+        
         // Return to downed State when run out of heath
         if(CurrentHealth.Value <= 0f && State.Value == LifeState.Alive)
         {
             EnterDownedState();
         }
+
+        _playerAudioController?.PlayerDamgeTaken();
     }
 
     #endregion
@@ -204,7 +213,7 @@ public class NetworkHealth : NetworkBehaviour, IDamageable
         
         // Change to Alive state
         State.Value = LifeState.Alive;
-        
+        InputManager.Instance.EnableFiring();
         // Notify all clients
         RevivedClientRpc();
 
@@ -223,7 +232,7 @@ public class NetworkHealth : NetworkBehaviour, IDamageable
         
         State.Value = LifeState.Dead;
         CurrentHealth.Value = 0f;
-        
+        InputManager.Instance.DisableFiring();
         // Notify all clients
         DeathClientRpc();
 
@@ -262,6 +271,13 @@ public class NetworkHealth : NetworkBehaviour, IDamageable
         // TODO: Play death animation
         // TODO: Show death UI
         // TODO: Play death sound
+    }
+
+    [ClientRpc]
+    private void NotifyHitmarkerClientRpc(ulong attackerId, ClientRpcParams p = default)
+    {
+        if (NetworkManager.Singleton.LocalClientId != attackerId) return;
+        _playerAudioController.PlayHitmarker();
     }
 
     #endregion

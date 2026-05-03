@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Cinemachine;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -7,12 +8,16 @@ public class BomberStrategy : WeaponStrategy
 {
     #region Parameters
 
-    [Header("Stats")]
-    [SerializeField] private ProjectileStats projectileStats;
+    [Header("Ref")]
+    [SerializeField] private GameObject explosionVFXPrefab;
 
     [Header("Stats")]
-    [SerializeField] private GameObject explosionVFXPrefab;
+    [SerializeField] private ProjectileStats projectileStats;
     [SerializeField] private float explosionDuration = 1f;
+    // [SerializeField] private float shakeDuration = 0.3f;
+    [SerializeField] private float shakeStrength = 0.5f;
+
+    private CinemachineVirtualCamera _vCam;
     
     #endregion
     
@@ -80,11 +85,19 @@ public class BomberStrategy : WeaponStrategy
     {
         base.ExecuteClientPredition(context);
         SpawnExplosionVFX(context.origin);
+
+        ShakeCamera(shakeStrength);
     }
 
     public override void ExcuteClientEffect(FireResult result)
     {
         SpawnExplosionVFX(result.hitPoint);
+
+        float distance = Vector3.Distance(Camera.main.transform.position, result.hitPoint);
+
+        float intensity = Mathf.Clamp01(1f- distance / 10f);
+
+       ShakeCamera(intensity * shakeStrength);
     }
     
     #endregion
@@ -100,5 +113,14 @@ public class BomberStrategy : WeaponStrategy
 
     }
 
+    private void ShakeCamera(float strength)
+    {
+        CameraShake cameraShake = Camera.main?.GetComponent<CameraShake>();
+        
+        cameraShake?.Shake(strength);
+
+        Debug.Log($"Camera Shake: {cameraShake}");
+    }
+    
     #endregion
 }

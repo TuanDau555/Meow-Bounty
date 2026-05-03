@@ -26,7 +26,7 @@ public class InputManager : Singleton<InputManager>
     
     public void DisableGameInput() => inputSystem.Player.Disable();
     public void EnableGameInput() => inputSystem.Player.Enable();
-    public void DisableMFiring() => inputSystem.Player.Fire.Disable();
+    public void DisableFiring() => inputSystem.Player.Fire.Disable();
     public void EnableFiring() => inputSystem.Player.Fire.Enable();
     
     public Vector2 GetPlayerMovement() => inputSystem.Player.Moving.ReadValue<Vector2>();

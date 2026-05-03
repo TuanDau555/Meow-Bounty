@@ -50,6 +50,8 @@ public struct BufferState
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : NetworkBehaviour
 {
+    private const string MOUSE_KEY = "mouseSen";
+    
     #region Paremeter
     
     [Header("Model Root")]
@@ -146,7 +148,7 @@ public class PlayerController : NetworkBehaviour
     private void InitStats(PlayerStatsSO defaultStats, CharacterDefinitionSO characterStats)
     {
         // Mouse Sen
-        _mouseSen = defaultStats.lookStats.lookSensitive;
+        _mouseSen = PlayerPrefs.GetFloat(MOUSE_KEY);
         _mouseLimitNormal = defaultStats.lookStats.lookLimit;
         _mouseLimnitWhenDowned = defaultStats.lookStats.lookLimitWhenDowned;
 
@@ -223,6 +225,16 @@ public class PlayerController : NetworkBehaviour
         base.OnNetworkDespawn();
     }
 
+    private void OnEnable()
+    {
+        GameSettingUI.OnMouseSensitiveChanged += HandeMouseSenChaned;
+    }
+
+    private void OnDisable()
+    {
+        GameSettingUI.OnMouseSensitiveChanged -= HandeMouseSenChaned;
+    }
+    
     private void Awake()
     {
         if(_playerController == null)
@@ -352,6 +364,12 @@ public class PlayerController : NetworkBehaviour
             headRoot.localRotation,
             Quaternion.Euler(pitch, 0, 0),
             15f * Time.deltaTime);
+    }
+
+    private void HandeMouseSenChaned(float value)
+    {
+        _mouseSen = value;
+        Debug.Log($"MouseSen updated: {_mouseSen}");
     }
 
     #endregion

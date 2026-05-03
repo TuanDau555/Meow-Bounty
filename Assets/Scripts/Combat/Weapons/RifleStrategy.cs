@@ -6,7 +6,7 @@ using UnityEngine.VFX;
 public class RifleStrategy : WeaponStrategy
 {
     [Header("Gun Stat")]
-    [SerializeField] private ProjectileStats projectileStats;    
+    [SerializeField] private ProjectileStats projectileStats; 
 
     [Header("VFX")]
     [SerializeField] private GameObject muzzleFlashVFXPrefab;
@@ -54,11 +54,6 @@ public class RifleStrategy : WeaponStrategy
 
         if(muzzleFlashVFXPrefab != null)
         {
-            // GameObject muzzleFlash = Instantiate(
-            //     muzzleFlashVFXPrefab,
-            //     context.origin,
-            //     baseRotation * offset
-            // );
             var muzzleFlash = HybridPool.Spawn(
                 muzzleFlashVFXPrefab, 
                 context.origin, 

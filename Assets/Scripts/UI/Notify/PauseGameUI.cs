@@ -35,6 +35,7 @@ public class PauseGameUI : Singleton<PauseGameUI>
         pausePanelGroup.alpha = 1;
         pausePanelGroup.interactable = true;
         pausePanelGroup.blocksRaycasts = true;
+        InputManager.Instance.DisableFiring();
         
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -47,6 +48,7 @@ public class PauseGameUI : Singleton<PauseGameUI>
         pausePanelGroup.alpha = 0;
         pausePanelGroup.interactable = false;
         pausePanelGroup.blocksRaycasts = false;
+        InputManager.Instance.EnableFiring();
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -55,6 +57,8 @@ public class PauseGameUI : Singleton<PauseGameUI>
     
     private async void OnClickBackToMenuAsync()
     {
+        await VivoxManager.Instance.LeaveChannelAsync();
+
         Time.timeScale = 1;
 
         // Despawn all the objects before shutdown
@@ -83,7 +87,6 @@ public class PauseGameUI : Singleton<PauseGameUI>
             await Task.Yield();
         }
 
-        await VivoxManager.Instance.LeaveChannelAsync();
         SceneManager.LoadScene("Main Menu Tuan");
     }
 

@@ -63,6 +63,10 @@ public class AuthManager : SingletonPersistent<AuthManager>
             {
                 await AuthenticationService.Instance.SignInAnonymouslyAsync();
             }
+            else
+            {
+                HandleSignedIn();
+            }
         }
         catch (AuthenticationException e)
         {

@@ -24,8 +24,22 @@ public class VoiceParticipantUI : MonoBehaviour
 
         participant.ParticipantSpeechDetected += RefreshSpeakingUI;
         participant.ParticipantMuteStateChanged += RefreshSpeakingUI;
+        Debug.Log($"Speech: {Participant.SpeechDetected}");
 
+        participant.ParticipantSpeechDetected += () =>
+        {
+            Debug.Log($"{participant.DisplayName} is speaking");
+        };
+        
         RefreshSpeakingUI();
+    }
+
+    private void OnDestroy()
+    {
+        if (Participant == null) return;
+
+        Participant.ParticipantSpeechDetected -= RefreshSpeakingUI;
+        Participant.ParticipantMuteStateChanged -= RefreshSpeakingUI;
     }
 
     private void RefreshSpeakingUI()

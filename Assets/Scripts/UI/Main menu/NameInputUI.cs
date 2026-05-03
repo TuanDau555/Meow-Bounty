@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,6 +9,8 @@ public class NameInputUI : MonoBehaviour
     [SerializeField] private TMP_InputField nameInput;
     [SerializeField] private Button confirmBtn;
 
+    public event Action OnDisplayNameUpdated;
+
     private void Awake()
     {
         confirmBtn.onClick.AddListener(OnConfirmClicked);
@@ -16,7 +19,7 @@ public class NameInputUI : MonoBehaviour
     private void OnConfirmClicked()
     {
         string name = nameInput.text.Trim();
-
+        var profile = ServiceLocator.ProfileService.PlayerData;
         if (!IsValidName(name))
         {
             Debug.Log("Name must be 3–16 characters");
@@ -30,11 +33,14 @@ public class NameInputUI : MonoBehaviour
             OnSuccess,
             OnError
         );
+        profile.name = name;
+        PlayFabManager.SaveProfile(profile);
     }
 
     private void OnSuccess()
     {
         Debug.Log("Display name set");
+        OnDisplayNameUpdated?.Invoke();
         gameObject.SetActive(false);
     }
 

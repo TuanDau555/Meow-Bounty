@@ -15,6 +15,12 @@ public class AccountManager
 
     public async Task<string> UnityLoginAsync()
     {
+
+    #if UNITY_WEBGL && !UNITY_EDITOR
+        Debug.Log("WebGL: skipping Unity Player Account Login");
+        return null;
+    #else
+
         _tcs = new TaskCompletionSource<string>();
 
         // if there is already in session so get token immediately, no need to Sign in again
@@ -43,8 +49,8 @@ public class AccountManager
         }
         
         return await _tcs.Task;
+    #endif
     }
-
     private void OnSignedIn()
     {
         PlayerAccountService.Instance.SignedIn -= OnSignedIn;

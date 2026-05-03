@@ -16,6 +16,14 @@ public class LoginUI : MonoBehaviour
         accountManager = new AccountManager();
     }
 
+    private void Start()
+    {
+    #if UNITY_WEBGL && !UNITY_EDITOR
+        quitBtn?.gameObject.SetActive(false);
+    #endif
+
+    }
+    
     private void OnEnable()
     {
         if (AuthManager.Instance != null)
@@ -65,6 +73,9 @@ public class LoginUI : MonoBehaviour
 
         try
         {
+    #if UNITY_WEBGL && !UNITY_EDITOR
+            await AuthManager.Instance.SignedInGuestAccount();
+    #else
             string accessToken = await accountManager.UnityLoginAsync();
 
             await AuthManager.Instance.SignedInOrLinkWithUnityAsyc(accessToken);
@@ -73,7 +84,7 @@ public class LoginUI : MonoBehaviour
 
             RefreshUI();
             SceneManager.LoadSceneAsync("Main Menu Tuan");
-
+    #endif
         }
         catch (Exception e)
         {
@@ -82,6 +93,16 @@ public class LoginUI : MonoBehaviour
         }
     }
 
+    #if UNITY_WEBGL && !UNITY_EDITOR
+
+    private async void AutoLoginWebGLAsycn()
+    {
+        await AuthManager.Instance.SignedInGuestAccount();
+        Debug.Log("WebGL auto login done");
+    }
+
+    #endif
+    
     public async void OnLogoutUnity()
     {
 
@@ -100,13 +121,13 @@ public class LoginUI : MonoBehaviour
 
     public void QuitGame()
     {
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
             // This stops Play Mode in the Unity Editor
             UnityEditor.EditorApplication.isPlaying = false;
-        #else
+#else
             // This closes the built application
             Application.Quit();
-        #endif
+#endif
     }
 
 }

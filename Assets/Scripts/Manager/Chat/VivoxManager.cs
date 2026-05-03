@@ -1,11 +1,12 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Vivox;
 using UnityEngine;
 
-public class VivoxManager : Singleton<VivoxManager>
+public class VivoxManager : SingletonPersistent<VivoxManager>
 {
     #region Parameters
 
@@ -63,6 +64,10 @@ public class VivoxManager : Singleton<VivoxManager>
             await VivoxService.Instance.LoginAsync(options);
 
             IsLoggedIn = true;
+
+            VivoxService.Instance.UnmuteInputDevice();
+            IsMuted = false;
+            
             OnLoggedIn?.Invoke();
 
             Debug.Log($"Vivox logged in: {displayName}");
@@ -110,15 +115,25 @@ public class VivoxManager : Singleton<VivoxManager>
 
             _currentChannelName = channelName;
 
+            VivoxService.Instance.ParticipantAddedToChannel += HandleParticipanntAdded;
+            VivoxService.Instance.ParticipantRemovedFromChannel += HandleParticipanntRemoved;
+
             await VivoxService.Instance.JoinGroupChannelAsync(
                 channelName,
                 ChatCapability.AudioOnly
             );
 
-            VivoxService.Instance.ParticipantAddedToChannel += HandleParticipanntAdded;
-            VivoxService.Instance.ParticipantRemovedFromChannel += HandleParticipanntRemoved;
+            VivoxService.Instance.UnmuteInputDevice();
 
-            Debug.Log($"Joined Vivox channel: {channelName}");
+            await VivoxService.Instance.SetChannelTransmissionModeAsync(
+                TransmissionMode.All);
+
+            IsMuted = false;
+            
+            Debug.Log($"[Vivox] Setup complete");
+            Debug.Log($"[Vivox] Active Channels: {VivoxService.Instance.ActiveChannels.Count}");
+            Debug.Log($"[Vivox] Is Input Muted: {VivoxService.Instance.IsInputDeviceMuted}");
+            Debug.Log($"[Vivox] Active Input Device: {VivoxService.Instance.ActiveInputDevice?.DeviceName}");
         }
         catch (Exception e)
         {
@@ -132,10 +147,11 @@ public class VivoxManager : Singleton<VivoxManager>
 
         try
         {
-            VivoxService.Instance.ParticipantAddedToChannel -= HandleParticipanntAdded;
-            VivoxService.Instance.ParticipantRemovedFromChannel -= HandleParticipanntRemoved;
 
             await VivoxService.Instance.LeaveAllChannelsAsync();
+
+            VivoxService.Instance.ParticipantAddedToChannel -= HandleParticipanntAdded;
+            VivoxService.Instance.ParticipantRemovedFromChannel -= HandleParticipanntRemoved;
 
             _currentChannelName = null;
 
@@ -184,7 +200,7 @@ public class VivoxManager : Singleton<VivoxManager>
 
     private void HandleParticipanntRemoved(VivoxParticipant participant)
     {
-        Debug.Log($"Participant joined: {participant.DisplayName}");
+        Debug.Log($"Participant left: {participant.DisplayName}");
         OnParticipantRemoved?.Invoke(participant);
     }
     

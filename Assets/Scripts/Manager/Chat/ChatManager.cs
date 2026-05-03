@@ -41,6 +41,8 @@ public class ChatManager : SingletonNetwork<ChatManager>
 
     private void Update()
     {
+        if(chatCanvasGroup == null) return;
+        
         _visibleTimer.Tick(Time.deltaTime);
         _fadeTimer.Tick(Time.deltaTime);
 

@@ -13,6 +13,7 @@ using UnityEngine.SceneManagement;
 /// Manage all the lobby system
 /// Include Create, Join, Leave, update character chose  
 /// </summary>
+[UnityEngine.Scripting.PreserveAttribute]
 public class GameLobbyService : IGameLobbyService
 {
     #region Parameter
@@ -33,7 +34,7 @@ public class GameLobbyService : IGameLobbyService
     private IHostAuthority _hostAuthority;
     private PlayerProfileService profileService;
 
-    public IHostAuthority HostAuthority => _hostAuthority;
+    public IHostAuthority GetHostAuthority() => _hostAuthority;
     public LobbyData CurrentLobby { get; private set; }
     #endregion
 

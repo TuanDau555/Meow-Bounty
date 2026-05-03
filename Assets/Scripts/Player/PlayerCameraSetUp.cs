@@ -159,6 +159,11 @@ public class PlayerCameraSetUp : NetworkBehaviour
 
     }
 
+    public CinemachineVirtualCamera GetVcam()
+    {
+        return vCam;
+    }
+
     #endregion
 
     #region Move Camera

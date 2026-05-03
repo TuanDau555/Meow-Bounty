@@ -10,6 +10,7 @@ public class ButtonTweener : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     [Header("General")]
     [SerializeField] private TweenType tweenType = TweenType.ScaleBounce;
     [SerializeField] private float _duration = 0.15f;
+    [SerializeField] private bool _isPulse;
 
     [Header("Scale Bounce")]
     [SerializeField] private Vector3 hoverScale = new Vector3(1.1f, 1.1f, 1f);
@@ -33,7 +34,7 @@ public class ButtonTweener : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     private Vector3 _defaultPos;
     private Vector3 _defaultRotation;
     private CanvasGroup _canvasGroup;
-    private Image _image;
+    private Tween tween;
 
     #endregion
 
@@ -44,6 +45,11 @@ public class ButtonTweener : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         _defaultScale = transform.localScale;
         _defaultPos = transform.localPosition;
         _defaultRotation = transform.localEulerAngles;
+    }
+
+    private void Start()
+    {
+        PlayPulse(_isPulse);
     }
 
     #endregion
@@ -150,6 +156,22 @@ public class ButtonTweener : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     }
     
     #endregion
+
+    private void PlayPulse(bool isPlay)
+    {
+        tween?.Kill();
+
+        if (!isPlay)
+        {
+            transform.localScale = Vector3.one;
+            return;
+        }
+
+        tween = transform
+            .DOScale(1.1f, 0.5f)
+            .SetLoops(-1, LoopType.Yoyo)
+            .SetEase(Ease.InOutSine);
+    }
 }
 
 public enum TweenType
