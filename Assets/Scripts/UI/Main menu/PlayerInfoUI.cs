@@ -10,6 +10,7 @@ public class PlayerInfoUI : MonoBehaviour
     #region Parameter
     [SerializeField] private TextMeshProUGUI playerNameText;
     [SerializeField] private TextMeshProUGUI characterText;
+    [SerializeField] private GameObject readyState;
     [SerializeField] private Button kickBtn;
 
     private LobbyPlayerData playerData;
@@ -26,6 +27,11 @@ public class PlayerInfoUI : MonoBehaviour
 
         playerNameText.text = data.displayName;
         characterText.text = data.characterId;
+
+        if (!data.isReady)
+        {
+            readyState.GetComponent<Image>().color = Color.red;
+        }
 
         RenderKickBtn();
     }
@@ -46,5 +52,14 @@ public class PlayerInfoUI : MonoBehaviour
     {
         gameLobbyService.KickPlayerAsync(playerData.playerId);
     }
+    #endregion
+
+    #region GET
+
+    public GameObject GetReadyState()
+    {
+        return readyState;
+    }
+    
     #endregion
 }

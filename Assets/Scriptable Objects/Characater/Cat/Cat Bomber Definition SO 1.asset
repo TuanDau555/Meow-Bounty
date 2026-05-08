@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89af1531afb7ad247a6ff0a453d29942, type: 3}
   m_Name: Cat Bomber Definition SO 1
   m_EditorClassIdentifier: 
-  id: Cat_02
+  id: bomber
   displayName: Cat Bomber
-  icon: {fileID: 2047992146, guid: 080cb6d98b00c2645b2c41df5f69bc78, type: 3}
+  icon: {fileID: 21300000, guid: a26ee255a41de1e41b6ef7c4be1ac206, type: 3}
   description: Blow everything away
   characterPrefab: {fileID: 8271282784123907453, guid: a44ed0904f6abf54b8192cd6e91d9643,
     type: 3}
@@ -22,7 +22,7 @@ MonoBehaviour:
     type: 3}
   characterStats:
     HP: 200
-    defend: 2.51
+    defend: 8
     damage: 50
     stamina: 1
     useStamina: 0

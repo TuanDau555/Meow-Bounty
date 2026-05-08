@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Player Default Stats
   m_EditorClassIdentifier: 
   lookStats:
-    lookSensitive: 0.1
+    lookSensitive: 0.26
     lookLimit: 70
     lookLimitWhenDowned: 45
   headBobStats:
@@ -25,3 +25,4 @@ MonoBehaviour:
     interactMask:
       serializedVersion: 2
       m_Bits: 256
+  gravity: -30

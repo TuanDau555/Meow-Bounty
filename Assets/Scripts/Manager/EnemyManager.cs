@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -12,18 +13,19 @@ public class EnemyManager : SingletonNetwork<EnemyManager>
 
     [Space(10)]
     [Header("Config")]
-    [SerializeField] private float spawnDelay = 10f;
-    [SerializeField] private int maxSpawnCount = 10;
-    [SerializeField] private float spawInterval = 5f;
-    
-    [Space(10)]
-    [Header("Spawn")]
-    [SerializeField] private Transform enemyPrefab;
+    [SerializeField] private List<EnemyWaveSO> waves;
     [SerializeField] private Transform[] spawnPoints;
-
-    private int _spawnCount;
+    // [SerializeField] private float delayBetweenWaves;
+    
+    private int _currentWaveIndex;
+    private int _spawnedInWave;
+    private int _totalRegistered;
+    
     private CountdownTimer _spawnIntervalTimer;
-    private CountdownTimer _spawnTimer;
+    private CountdownTimer _waveDelayTimer;
+
+    private EnemyWaveSO CurrentWave => waves[_currentWaveIndex];
+    private bool HasNextWave => _currentWaveIndex + 1 < waves.Count;
 
     // Events
     public event EventHandler OnEnemyDead;
@@ -36,24 +38,36 @@ public class EnemyManager : SingletonNetwork<EnemyManager>
     protected override void Awake()
     {
         base.Awake();
-        _spawnTimer = new CountdownTimer(spawnDelay);
-        _spawnTimer.OnTimerStop += HandleTimerStop;
+        _waveDelayTimer = new CountdownTimer(CurrentWave.waveSpawnDelay);
+        _waveDelayTimer.OnTimerStop += StartCurrentWave;
 
-        _spawnIntervalTimer = new CountdownTimer(spawInterval);
+        _spawnIntervalTimer = new CountdownTimer(CurrentWave.spawnInterval);
         _spawnIntervalTimer.OnTimerStop += HandleSpawnEnemy;
     }
 
+    public override void OnDestroy()
+    {
+        _waveDelayTimer.OnTimerStop -= StartCurrentWave;
+        _spawnIntervalTimer.OnTimerStop -= HandleSpawnEnemy;
+        
+        base.OnDestroy();
+    }
+    
     private void Start()
     {
-        StartSpawn();
-        HandleStartSpawn();
+        if(!IsServer) return;
+
+        HybridPool.ClearNetworkPool();
+        
+        StartWave(_currentWaveIndex);
+        // HandleStartSpawn();
     }
 
     private void Update()
     {
         if(!IsServer) return;
         
-        _spawnTimer.Tick(Time.deltaTime);
+        _waveDelayTimer.Tick(Time.deltaTime);
         _spawnIntervalTimer.Tick(Time.deltaTime);
     }
     
@@ -72,86 +86,21 @@ public class EnemyManager : SingletonNetwork<EnemyManager>
         OnSpawnFinished?.Invoke(this, EventArgs.Empty);
     }
 
-    private void HandleStartSpawn()
-    {
-        Debug.Log("Start spawning enemies");
-
-        _spawnCount = 0;
-        _spawnIntervalTimer.Start();
-        Debug.Log($"Spawn timer: {_spawnIntervalTimer}");
-    }
-
     private void HandleSpawnEnemy()
     {
-        if(_spawnCount >= maxSpawnCount)
+        if(_spawnedInWave >= CurrentWave.enemyCount)
         {
-            _spawnIntervalTimer.Stop();
-
-            Debug.Log("Spawn Finish");
-
-            mission?.NotifySpawnFinished();
-            OnSpawnFinished?.Invoke(this, EventArgs.Empty);
+            OnWaveSpawnComplete();
             return;
         }
 
-        SpawnEnemy();
+        SpawnRandomEnemy();
+        _spawnedInWave++;
 
-        _spawnCount++;
-
-        _spawnIntervalTimer.Reset();
+        _spawnIntervalTimer.Reset(CurrentWave.spawnInterval);
         _spawnIntervalTimer.Start();
     }
-    
-    #endregion
 
-    #region Spawn Enemy
-
-    private void StartSpawn()
-    {
-        _spawnTimer.Reset(); // Reset to spawn delay
-        _spawnTimer.Start();
-
-        Debug.Log($"Spawn timer started: {spawnDelay}");
-    }
-
-    private void SpawnEnemy()
-    {
-        if(spawnPoints.Length == 0) return;
-
-        var spawnPoint = spawnPoints[UnityEngine.Random.Range(0, spawnPoints.Length)];
-
-        Vector3 randomPos = spawnPoint.position;
-
-        if(UnityEngine.AI.NavMesh.SamplePosition(
-            randomPos, out var hit, 2f, UnityEngine.AI.NavMesh.AllAreas
-        ))
-        {
-            randomPos = hit.position;
-        }
-        
-        Transform enemy = Instantiate(enemyPrefab, randomPos, Quaternion.identity);
-
-        var netObj = enemy.GetComponent<NetworkObject>();
-        netObj.Spawn();
-        
-        if(mission != null)
-        {
-            mission.RegisterEnemy();
-        }
-
-        Debug.Log($"Spawn Enemy {_spawnCount + 1}");
-    }
-    
-    private void StopSpawn()
-    {
-        _spawnTimer.Stop();
-    }
-
-    private void ResumeSpawn()
-    {
-        _spawnTimer.Resume();
-    }
-    
     public void NotifyEnemyDead()
     {
         if(mission != null)
@@ -164,10 +113,147 @@ public class EnemyManager : SingletonNetwork<EnemyManager>
     
     #endregion
 
+    #region Wave control
+
+    private void StartWave(int waveIndex)
+    {
+        _currentWaveIndex = waveIndex;
+        _spawnedInWave = 0;
+        
+        _waveDelayTimer.Reset(CurrentWave.delayBeforeWave); // Reset to spawn delay
+        _waveDelayTimer.Start();
+
+    }
+
+    private void StartCurrentWave()
+    {
+        Debug.Log($"Wave {_currentWaveIndex + 1} started - {CurrentWave.enemyCount}");
+
+        _spawnIntervalTimer.Reset(CurrentWave.spawnInterval);
+        _spawnIntervalTimer.Start();
+    }
+
+    private void OnWaveSpawnComplete()
+    {
+        Debug.Log($"Wave{_currentWaveIndex + 1} spawn complete");
+
+        if (HasNextWave)
+        {
+            Debug.Log($"Next wave in {CurrentWave.delayBeforeWave}");
+            _waveDelayTimer.Reset(CurrentWave.delayBeforeWave);
+            _waveDelayTimer.OnTimerStop -= StartCurrentWave;
+            _waveDelayTimer.OnTimerStop += StartNextWave;
+            _waveDelayTimer.Start();
+        }
+        else
+        {
+            Debug.Log($"All waves spawned");
+            mission?.NotifySpawnFinished();
+            OnSpawnFinished?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
+    #endregion
+
+    #region Spawn Enemy
+    
+    private void SpawnRandomEnemy()
+    {
+        if(!IsServer) return;
+        if(spawnPoints.Length == 0) return;
+        if(CurrentWave.enemies == null || CurrentWave.enemies.Count == 0) return;
+
+        GameObject prefab = GetWeightRandomEnemy(CurrentWave.enemies);
+        if(prefab == null) return;
+
+       
+        var spawnPoint = spawnPoints[UnityEngine.Random.Range(0, spawnPoints.Length)];
+
+        Vector3 randomPos = spawnPoint.position;
+
+        if(UnityEngine.AI.NavMesh.SamplePosition(
+            randomPos, out var hit, 2f, UnityEngine.AI.NavMesh.AllAreas
+        ))
+        {
+            randomPos = hit.position;
+        }
+
+        if(randomPos == null)
+        {
+            Debug.LogError("Can't find position to spawn");
+            return;
+        }
+        
+        HybridPool.Spawn(prefab, randomPos, Quaternion.identity);
+        
+        if(mission != null)
+        {
+            mission.RegisterEnemy();
+        }
+        _totalRegistered++;
+
+        Debug.Log($"Spawned {prefab.name} | Wave {_currentWaveIndex + 1} | {_spawnedInWave + 1}/{CurrentWave.enemyCount}");
+    }
+
+    private GameObject GetWeightRandomEnemy(List<EnemySpawnData> enemies)
+    {
+        float totalWeight = 0;
+        foreach(var e in enemies)
+        {
+            totalWeight += e.weight;
+        }
+
+        float random = UnityEngine.Random.Range(0, totalWeight);
+        float cumulative = 0;
+
+        foreach(var e in enemies)
+        {
+            cumulative += e.weight;
+            if(random <= cumulative)
+            {
+                return e.enemyPrefab;
+            }
+        }
+
+        return enemies[^1].enemyPrefab; // fallback
+    }
+
+    #endregion
+
+    #region Count Timer
+
+    private void StartNextWave()
+    {
+        _waveDelayTimer.OnTimerStop -= StartNextWave;
+        _waveDelayTimer.OnTimerStop += StartCurrentWave;
+
+        _currentWaveIndex++;
+        _spawnedInWave = 0;
+
+        Debug.Log($"Wave {_currentWaveIndex + 1} starting");
+        StartCurrentWave();
+    }
+    
+    private void StopSpawn()
+    {
+        _waveDelayTimer.Stop();
+    }
+
+    private void ResumeSpawn()
+    {
+        _waveDelayTimer.Resume();
+    }
+    
+    #endregion
+
     #region GET
 
+    public int CurrentWaveNumber => _currentWaveIndex + 1;
+    
+    public int TotalWaves => waves.Count;
+    
     public float GetSpawnProgress()
-        => _spawnTimer.Progress; // 0-1 
+        => _waveDelayTimer.Progress; // 0-1 
     
     #endregion
 }

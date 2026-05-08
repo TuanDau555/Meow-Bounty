@@ -10,7 +10,8 @@ public class MissionManager : NetworkBehaviour
     [SerializeField] private MissionBase missionBase;
     [SerializeField] private MissionUI missionUI;
 
-    [SerializeField] private GameObject saveRoomDoor;
+    [SerializeField] private GameObject safeRoomDoor;
+    [SerializeField] private GameObject safeRoomDoorVisual;
 
     // Net Variables
     [HideInInspector] public NetworkVariable<int> CurrentObjectiveIndex = new NetworkVariable<int>();
@@ -63,7 +64,7 @@ public class MissionManager : NetworkBehaviour
         AllMissionCompleted = true;
         IsMissionCompleted.Value = true;
         
-        saveRoomDoor.SetActive(true);
+        UnlockSafeRoomClientRpc();
     }
 
     private void HandleMissionCompleted(object sender, MissionBase e)
@@ -77,9 +78,7 @@ public class MissionManager : NetworkBehaviour
         AllMissionCompleted = true;
         IsMissionCompleted.Value = true;
 
-        GameEndManager.Instance.EndGame(true);
-        
-        UnlockSaveRoom();
+        GameEndManager.Instance.EndGame(true);        
     }
 
     
@@ -108,7 +107,8 @@ public class MissionManager : NetworkBehaviour
     {
         Debug.Log("Save room unlocked");
 
-        saveRoomDoor.SetActive(true);
+        safeRoomDoor.SetActive(true);
+        UnlockSafeRoomClientRpc();
     }
 
     public void NotifyMissionFailed()
@@ -153,6 +153,13 @@ public class MissionManager : NetworkBehaviour
         Debug.Log($"Receive reward: {coins}");
 
         RewardManager.Instance.ReceiveReward(coins, exp);
+    }
+
+    [ClientRpc]
+    private void UnlockSafeRoomClientRpc()
+    {
+        safeRoomDoor.SetActive(true);
+        safeRoomDoorVisual.SetActive(true);
     }
     
     #endregion

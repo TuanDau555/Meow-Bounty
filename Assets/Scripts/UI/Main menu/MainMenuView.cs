@@ -8,11 +8,13 @@ using UnityEngine;
 public class MainMenuView : MonoBehaviour
 {
     #region Variables
-    [SerializeField] private GameObject nameInputUI;
+    [SerializeField] private GameObject nameInputCanvas;
     [SerializeField] private TextMeshProUGUI playerNameText;
     [SerializeField] private TextMeshProUGUI coinsBalanceText;
     [SerializeField] private TextMeshProUGUI coinsBalanceTextInShop;
 
+    [SerializeField] private NameInputUI nameInputUI; // script attach
+    
     private PlayerProfileService profileService;
     private IHostAuthority hostAuthority;
     #endregion
@@ -22,6 +24,10 @@ public class MainMenuView : MonoBehaviour
     private void Awake()
     {
         CurrencyManager.Instance.OnCoinUpdate += HandleCoinUpdate;
+        
+        if(nameInputUI == null) return;
+
+        nameInputUI.OnDisplayNameUpdated += OnDisplayNameUpdated;
     }
 
     private void Start()
@@ -44,6 +50,10 @@ public class MainMenuView : MonoBehaviour
     private void OnDestroy()
     {
         CurrencyManager.Instance.OnCoinUpdate -= HandleCoinUpdate;
+
+        if(nameInputUI == null) return;
+
+        nameInputUI.OnDisplayNameUpdated -= OnDisplayNameUpdated;
     }
 
     #endregion
@@ -75,17 +85,27 @@ public class MainMenuView : MonoBehaviour
         profileService.LoadOrCreateProfile(OnProfileReady);
     }
 
-    private void OnProfileReady()
+    private void OnDisplayNameUpdated()
+    {
+        // Update profile again from PlayFab
+        profileService.LoadOrCreateProfile(() =>
+        {
+            SetDisplayName();
+            Debug.Log("Display name updated in UI: " + profileService.DisplayName);
+        });
+    }
+    
+    private async void OnProfileReady()
     {
         if (profileService.HasDisplayName())
         {
-            nameInputUI.SetActive(true);
+            nameInputCanvas.SetActive(true);
             playerNameText.text = "New Player";
             Debug.Log("Create Profile");
         }
         else
         {
-            nameInputUI.SetActive(false); 
+            nameInputCanvas.SetActive(false); 
             SetDisplayName();
             CurrencyManager.Instance.GetCoinCurrency();
             Debug.Log("Profile Ready");
@@ -98,6 +118,7 @@ public class MainMenuView : MonoBehaviour
             ServiceLocator.InitLobby(hostAuthority);
             Debug.Log("GameLobbyService initialized after profile ready.");
         }
+        await VivoxManager.Instance.LoginAsync(profileService.DisplayName);
     }
     #endregion
 

@@ -1,11 +1,13 @@
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class EndGameUI : Singleton<EndGameUI> 
+public class EndGameUI : SingletonNetwork<EndGameUI> 
 {
     #region Parameters
 
@@ -50,8 +52,9 @@ public class EndGameUI : Singleton<EndGameUI>
     public void Show(bool isSuccess)
     {
         endPanelGroup.alpha = 1;
-        endPanelGroup.interactable = isSuccess;
-        endPanelGroup.blocksRaycasts = isSuccess;
+        endPanelGroup.interactable = true;
+        endPanelGroup.blocksRaycasts = true;
+        InputManager.Instance.DisableFiring();
 
         resultText.text = isSuccess ? "MISSION COMPLETE" : "MISSION FAILED";
 
@@ -72,16 +75,76 @@ public class EndGameUI : Singleton<EndGameUI>
         expEarnText.text = $"+{exp}xp";
     }
 
-    private void OnClickBackToMenu()
+    private async void OnClickBackToMenu()
     {
+        await VivoxManager.Instance.LeaveChannelAsync();
+
         if(_isLoading) return;
         _isLoading = true;
+                
+        Time.timeScale = 1;
+
+        // Despawn all the objects before shutdown
+        if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsServer)
+        {
+            ForceAllClientsToMenuClientRpc();
+
+            await Task.Delay(500);
+            
+            var spawnedObjects = new List<NetworkObject>(
+                NetworkManager.Singleton.SpawnManager.SpawnedObjectsList
+            );
+
+            foreach (var netObj in spawnedObjects)
+            {
+                if (netObj == null) continue;
+                if (netObj.gameObject == NetworkManager.Singleton.gameObject) continue;
+                netObj.Despawn(true);
+            }
+        }
+
+        //  wait to despawn then we shut down
+        await Task.Delay(300);
 
         NetworkManager.Singleton.Shutdown();
-        
+
+        //  Wait for shutting down completely
+        while (NetworkManager.Singleton != null && NetworkManager.Singleton.ShutdownInProgress)
+        {
+            await Task.Yield();
+        }
         SceneManager.LoadScene("Main Menu Tuan");
-        Time.timeScale = 1;
+
     }
     
+    #endregion
+
+    #region RPC
+
+    [ClientRpc]
+    private void ForceAllClientsToMenuClientRpc()
+    {
+        if(NetworkManager.Singleton.IsServer) return;
+
+        _ = ForceClientToMenuAsync();
+    }
+    
+    private async Task ForceClientToMenuAsync()
+    {
+        await VivoxManager.Instance.LeaveChannelAsync();
+
+        NetworkManager.Singleton.Shutdown();
+
+        while (NetworkManager.Singleton != null && NetworkManager.Singleton.ShutdownInProgress)
+        {
+            await Task.Yield();
+        }
+
+        Time.timeScale = 1;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        SceneManager.LoadScene("Main Menu Tuan");
+
+    }
     #endregion
 }
