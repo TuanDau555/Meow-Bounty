@@ -16,4 +16,4 @@ MonoBehaviour:
   projectilePrefab: {fileID: 0}
   speed: 20
   damage: 50
-  range: 20
+  range: 12

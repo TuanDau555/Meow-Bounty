@@ -44,6 +44,8 @@ public class LobbyListView : MonoBehaviour
     private IGameLobbyService _gameLobbyService;
     private IHostAuthority _hostAuthority;
     private bool _isBound;
+    private bool _isStartingGame;
+
     #endregion
 
     #region Execute
@@ -231,12 +233,23 @@ public class LobbyListView : MonoBehaviour
         Debug.Log($"Player {myId} is ready");
 
         //TODO: Ready UI pop up
+        var playerInfo = playerInfoPrefabs.GetComponent<PlayerInfoUI>().GetReadyState();
+        Debug.Log($"Player info Object: {playerInfo}");
+        var readyImage = playerInfo.GetComponent<Image>();
+        readyImage.color = Color.green;
+        Debug.Log($"Player info component: {readyImage}");
 
         await lobby.SetPlayerReadyAsync(myId, !isReady);
     }
 
     private async void OnStartGameClicked()
     {
+        if(_isStartingGame) return;
+
+        _isStartingGame = true;
+        
+        readyBtn.interactable = false;
+        startGameBtn.interactable = false;
         await _gameLobbyService.StartGameAsync();
     }
 
@@ -280,9 +293,17 @@ public class LobbyListView : MonoBehaviour
     private void UpdateStartGameButton(LobbyData lobby)
     {
         bool isLocalReady = AreAllMembersReady(lobby);
+
+        if(lobby.lobbyState == LobbyState.Starting)
+        {
+            startGameBtn.interactable = false;
+            readyBtn.interactable = false;
+            leaveRoomBtn.interactable = false;
+            return;
+        }
         
         // if not host
-        if (!_gameLobbyService.HostAuthority.IsHost)
+        if (!_gameLobbyService.GetHostAuthority.IsHost)
         {
             readyBtn.gameObject.SetActive(true);
             startGameBtn.gameObject.SetActive(false);
@@ -292,6 +313,7 @@ public class LobbyListView : MonoBehaviour
         
 
         startGameBtn.gameObject.SetActive(true);
+        readyBtn.gameObject.SetActive(false);
 
         startGameBtn.interactable = isLocalReady;
     }
@@ -309,7 +331,7 @@ public class LobbyListView : MonoBehaviour
     private void BindLobbyService()
     {
         _gameLobbyService = ServiceLocator.GameLobbyService;
-        _hostAuthority = _gameLobbyService.HostAuthority;
+        _hostAuthority = _gameLobbyService.GetHostAuthority;
 
         _gameLobbyService.OnLocalLobbyUpdated += OnLocalLobbyUpdated;
         _gameLobbyService.OnLobbyLeft += OnLobbyLeft;

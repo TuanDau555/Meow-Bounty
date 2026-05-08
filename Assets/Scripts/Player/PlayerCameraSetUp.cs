@@ -103,6 +103,7 @@ public class PlayerCameraSetUp : NetworkBehaviour
         if(!IsOwner) return;
 
         MoveToNormalPos();
+        InputManager.Instance.EnableFiring();
     }
 
     private void HandleDeath(object sender, EventArgs e)
@@ -111,6 +112,7 @@ public class PlayerCameraSetUp : NetworkBehaviour
         if(!IsOwner) return;
 
         SpectatorManager.Instance.UnRegisterPlayer(transform);
+        InputManager.Instance.DisableFiring();
 
         EnterSpectatorMode();
     }
@@ -157,6 +159,11 @@ public class PlayerCameraSetUp : NetworkBehaviour
         Cursor.visible = true;
         SetLayerRecursively(visualRoot, LayerMask.NameToLayer("Default"));
 
+    }
+
+    public CinemachineVirtualCamera GetVcam()
+    {
+        return vCam;
     }
 
     #endregion

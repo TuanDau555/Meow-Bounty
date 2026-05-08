@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maps:
   - mapThumbnail: {fileID: 21300000, guid: 824d32becb2511b4b956098a1a7a6069, type: 3}
-    mapThumbnainLocked: {fileID: 1812906440, guid: 080cb6d98b00c2645b2c41df5f69bc78,
+    mapThumbnailLocked: {fileID: 21300000, guid: 824d32becb2511b4b956098a1a7a6069,
       type: 3}
     mapName: City
     sceneName: Lv1
   - mapThumbnail: {fileID: 21300000, guid: 1740159e13cc1a1418306394c60812df, type: 3}
-    mapThumbnainLocked: {fileID: 1812906440, guid: 080cb6d98b00c2645b2c41df5f69bc78,
+    mapThumbnailLocked: {fileID: 21300000, guid: 1740159e13cc1a1418306394c60812df,
       type: 3}
     mapName: Maze
-    sceneName: Lv2
+    sceneName: LevelTst

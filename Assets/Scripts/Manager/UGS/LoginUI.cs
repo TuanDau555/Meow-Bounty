@@ -7,6 +7,7 @@ public class LoginUI : MonoBehaviour
 {
     [SerializeField] private Button unityLinkButton;
     [SerializeField] private Button logOutBtn;
+    [SerializeField] private Button quitBtn;
 
     private AccountManager accountManager;
 
@@ -15,12 +16,22 @@ public class LoginUI : MonoBehaviour
         accountManager = new AccountManager();
     }
 
+    private void Start()
+    {
+    #if UNITY_WEBGL && !UNITY_EDITOR
+        quitBtn?.gameObject.SetActive(false);
+    #endif
+
+    }
+    
     private void OnEnable()
     {
         if (AuthManager.Instance != null)
         {
             AuthManager.Instance.OnAuthReady += HandleAuthReady;
         }
+
+        quitBtn?.onClick.AddListener(QuitGame);
     }
 
 
@@ -28,6 +39,8 @@ public class LoginUI : MonoBehaviour
     {
         if (AuthManager.Instance != null)
             AuthManager.Instance.OnAuthReady -= HandleAuthReady;
+
+        quitBtn?.onClick.RemoveListener(QuitGame);
     }
 
     private void HandleAuthReady(object sender, EventArgs e)
@@ -37,6 +50,8 @@ public class LoginUI : MonoBehaviour
 
     private void RefreshUI()
     {
+        if(unityLinkButton == null) return;
+
         if (!AuthManager.Instance.hasUnityId)
         {
             unityLinkButton.gameObject.SetActive(true);
@@ -53,10 +68,14 @@ public class LoginUI : MonoBehaviour
     /// <returns>Access Token of that account</returns>
     public async void OnLoginUnity()
     {
+        if(unityLinkButton == null) return;
         unityLinkButton.interactable = false;
 
         try
         {
+    #if UNITY_WEBGL && !UNITY_EDITOR
+            await AuthManager.Instance.SignedInGuestAccount();
+    #else
             string accessToken = await accountManager.UnityLoginAsync();
 
             await AuthManager.Instance.SignedInOrLinkWithUnityAsyc(accessToken);
@@ -65,7 +84,7 @@ public class LoginUI : MonoBehaviour
 
             RefreshUI();
             SceneManager.LoadSceneAsync("Main Menu Tuan");
-
+    #endif
         }
         catch (Exception e)
         {
@@ -74,16 +93,24 @@ public class LoginUI : MonoBehaviour
         }
     }
 
+    #if UNITY_WEBGL && !UNITY_EDITOR
+
+    private async void AutoLoginWebGLAsycn()
+    {
+        await AuthManager.Instance.SignedInGuestAccount();
+        Debug.Log("WebGL auto login done");
+    }
+
+    #endif
+    
     public async void OnLogoutUnity()
     {
-        logOutBtn.interactable = false;
 
         try
         {
             await AuthManager.Instance.SignOutAysnc();
+            SceneManager.LoadSceneAsync(0); // back to log in scene
             Debug.Log("Logout DONE");
-
-            RefreshUI();
         }
         catch (Exception e)
         {
@@ -91,4 +118,16 @@ public class LoginUI : MonoBehaviour
             logOutBtn.interactable = true;
         }
     }
+
+    public void QuitGame()
+    {
+#if UNITY_EDITOR
+            // This stops Play Mode in the Unity Editor
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            // This closes the built application
+            Application.Quit();
+#endif
+    }
+
 }

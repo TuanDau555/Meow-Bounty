@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class HostageDoor : NetworkBehaviour, IInteractable
 {
-    #region Parametor
+    #region Parameter
     
     [Header("Settings")]
     [SerializeField] private float openTime = 50f;
@@ -16,7 +16,7 @@ public class HostageDoor : NetworkBehaviour, IInteractable
     private NetworkVariable<float> _currentProgress = new NetworkVariable<float>(0f);
     private HashSet<ulong> _interactingPlayer = new HashSet<ulong>();
     private ulong _currentPlayerId;
-    private bool _isBeingOpned = false;
+    private bool _isBeingOpened = false;
     private bool _isComplete = false;
 
     #endregion
@@ -29,7 +29,7 @@ public class HostageDoor : NetworkBehaviour, IInteractable
         
         ValidatePlayer();
         
-        if(!_isBeingOpned || _isComplete) return;
+        if(!_isBeingOpened || _isComplete) return;
 
         Debug.Log($"Start opening the door");
         
@@ -55,7 +55,7 @@ public class HostageDoor : NetworkBehaviour, IInteractable
     private void CompletedOpeningDoor()
     {
         _isComplete = true;
-        _isBeingOpned = false;
+        _isBeingOpened = false;
 
         Debug.Log("Door fully opened");
 
@@ -108,7 +108,7 @@ public class HostageDoor : NetworkBehaviour, IInteractable
             _interactingPlayer.Remove(id);
         }
 
-        _isBeingOpned = _interactingPlayer.Count > 0;
+        _isBeingOpened = _interactingPlayer.Count > 0;
 
     }
     
@@ -124,9 +124,9 @@ public class HostageDoor : NetworkBehaviour, IInteractable
 
         _interactingPlayer.Add(_currentPlayerId);
         
-        _isBeingOpned = _interactingPlayer.Count > 0;
+        _isBeingOpened = _interactingPlayer.Count > 0;
         
-        Debug.Log($"Is Opened: {_isBeingOpned}");
+        Debug.Log($"Is Opened: {_isBeingOpened}");
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -136,8 +136,8 @@ public class HostageDoor : NetworkBehaviour, IInteractable
 
         _interactingPlayer.Remove(_currentPlayerId);
         
-        _isBeingOpned = _interactingPlayer.Count > 0;
-        Debug.Log($"Is Opened: {_isBeingOpned}");
+        _isBeingOpened = _interactingPlayer.Count > 0;
+        Debug.Log($"Is Opened: {_isBeingOpened}");
     } 
     
     #endregion

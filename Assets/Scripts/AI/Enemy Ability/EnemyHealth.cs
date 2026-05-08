@@ -89,11 +89,13 @@ public class EnemyHealth : NetworkBehaviour, IDamageable
 
         OnDeath?.Invoke(this, this);
 
-        if(TryGetComponent(out NetworkObject netObj))
-        {
-            // TODO: Move to Object Pool
-            netObj.Despawn();
-        }
+        // if(TryGetComponent(out NetworkObject netObj))
+        // {
+        //     // TODO: Move to Object Pool
+        //     netObj.Despawn();
+        // }
+
+        HybridPool.Despawn(gameObject);
     }
     
     #endregion

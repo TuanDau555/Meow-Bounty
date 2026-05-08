@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89af1531afb7ad247a6ff0a453d29942, type: 3}
   m_Name: Cat Rifle Definition SO
   m_EditorClassIdentifier: 
-  id: Cat_01
+  id: rifle
   displayName: Cat Rifle
   icon: {fileID: 0}
   description: 
@@ -22,8 +22,8 @@ MonoBehaviour:
     type: 3}
   characterStats:
     HP: 100
-    defend: 2.51
-    damage: 1
+    defend: 2.5
+    damage: 5
     stamina: 1
     useStamina: 0
     staminaUseMultiplier: 5

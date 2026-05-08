@@ -1,4 +1,4 @@
-using Unity.Services.Lobbies.Models;
+using Unity.Netcode;
 using UnityEngine;
 
 public class PlayerInteraction : MonoBehaviour
@@ -7,12 +7,21 @@ public class PlayerInteraction : MonoBehaviour
 
     [SerializeField] private PlayerStatsSO playerStatsSO;
 
-    private IInteractable currentInteractable;
+    private IInteractable _currentInteractable;
+    private InteractableUI _currentUI;
+    private bool _isInteractable;
+
+    private NetworkObject _networkObject;
 
     #endregion
 
     #region Execute
 
+    private void Awake()
+    {
+        _networkObject = GetComponent<NetworkObject>();
+    }
+    
     private void Update()
     {
         RaycastCheck();
@@ -27,31 +36,65 @@ public class PlayerInteraction : MonoBehaviour
     {
         Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
 
-        bool isInteractable = Physics.Raycast(ray, out RaycastHit hit, playerStatsSO.interactStats.interactDistance, playerStatsSO.interactStats.interactMask);
+        bool hit = Physics.Raycast(
+            ray, 
+            out RaycastHit hitInfo, 
+            playerStatsSO.interactStats.interactDistance, 
+            playerStatsSO.interactStats.interactMask
+        );
 
-        if (isInteractable)
+        if (hit)
         {
-            currentInteractable = hit.collider.GetComponent<IInteractable>();
-            Debug.Log($"You are able to interact with {currentInteractable}");
+            var interactable = hitInfo.collider.GetComponent<IInteractable>();
+            var ui = hitInfo.collider.GetComponent<InteractableUI>();
+
+            if(interactable != _currentInteractable)
+            {
+                _currentUI?.HideUI();
+                _currentInteractable = interactable;
+                _currentUI = ui;
+
+                _currentUI?.ShowUI(Camera.main.transform);
+                
+                Debug.Log($"You are able to interact with {_currentInteractable}");
+            }
+               
         }
         else
         {
-            currentInteractable = null;
+            if(_currentInteractable != null)
+            {
+                _currentInteractable.StopInteract(_networkObject.OwnerClientId);
+                _currentUI?.HideUI();
+                _currentUI = null;
+                _currentInteractable = null;
+                _isInteractable = false;
+            }
         }
     }
 
     private void HandleInput()
     {
-        if(currentInteractable == null) return;
+        if(_currentInteractable == null) return;
 
+        ulong ownerId = _networkObject.OwnerClientId;
+        
         if (InputManager.Instance.IsInteractPressed())
         {
-            currentInteractable.StartInteract(0);
-            Debug.Log($"You are currently interacted with {currentInteractable}");
+            if(!_isInteractable)
+            {
+                _isInteractable = true;
+                _currentInteractable.StartInteract(ownerId);
+                Debug.Log($"You are currently interacted with {_currentInteractable}");
+            }
         }
         else
         {
-            currentInteractable.StopInteract(0);
+            if (_isInteractable)
+            {
+                _isInteractable = false;               
+                _currentInteractable.StopInteract(ownerId);
+            }
         }
     }
     

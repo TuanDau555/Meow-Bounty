@@ -13,12 +13,21 @@ using UnityEngine.SceneManagement;
 /// Manage all the lobby system
 /// Include Create, Join, Leave, update character chose  
 /// </summary>
+[UnityEngine.Scripting.PreserveAttribute]
 public class GameLobbyService : IGameLobbyService
 {
     #region Parameter
     private const float k_pollInterval = 1.5f;
     private const int k_heartbeatInterval = 15000; // 15s
 
+#if UNITY_WEBGL && !UNITY_EDITOR
+    private const int k_webglHostBootDelay = 2500;     // wait transport boot
+    private const int k_webglClientReadyDelay = 1500;  // wait relay setup
+#else
+    private const int k_webglHostBootDelay = 300;
+    private const int k_webglClientReadyDelay = 300;
+#endif
+    
     private bool _relayPrepared = false;
     
     // Room event
@@ -33,7 +42,7 @@ public class GameLobbyService : IGameLobbyService
     private IHostAuthority _hostAuthority;
     private PlayerProfileService profileService;
 
-    public IHostAuthority HostAuthority => _hostAuthority;
+    public IHostAuthority GetHostAuthority => _hostAuthority;
     public LobbyData CurrentLobby { get; private set; }
     #endregion
 
@@ -48,6 +57,7 @@ public class GameLobbyService : IGameLobbyService
     #region Lobby Interaction
     public async Task CreateLobbyAsync(string lobbyName, int maxPlayers, CreateLobbyOptions options)
     {
+        _relayPrepared = false;
         try
         {
             // Configure lobby: Init state is alway in waiting state
@@ -90,6 +100,8 @@ public class GameLobbyService : IGameLobbyService
 
             // Start checking if there any player join the room to update the UI
             StartLobbyPolling();
+
+            await VivoxManager.Instance.JoinGroupChannelAsync(_ugsLobby.Id);
         } 
         catch(LobbyServiceException e)
         {
@@ -187,6 +199,8 @@ public class GameLobbyService : IGameLobbyService
             Debug.LogError("Join Lobby Failed");
         }
 
+        _relayPrepared = false;
+
         try
         {
             _ugsLobby = await LobbyService.Instance.JoinLobbyByIdAsync(
@@ -200,6 +214,8 @@ public class GameLobbyService : IGameLobbyService
             // Update lobby data if there someone join
             UpdateLocalLobby(_ugsLobby);
             StartLobbyPolling();
+
+            await VivoxManager.Instance.JoinGroupChannelAsync(_ugsLobby.Id);
         }
         catch (LobbyServiceException e)
         {
@@ -252,6 +268,12 @@ public class GameLobbyService : IGameLobbyService
 
     public async Task LeaveLobbyAsync()
     {
+        if(NetworkManager.Singleton != null)
+        {
+            NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnectedCallback;
+            NetworkManager.Singleton.OnServerStarted -= HandleServerStarted;
+        }
+        
         try
         {    
             if(_ugsLobby == null) return;
@@ -279,6 +301,8 @@ public class GameLobbyService : IGameLobbyService
             _ugsLobby = null;
             CurrentLobby = null;
 
+            await VivoxManager.Instance.LeaveChannelAsync();
+            
             OnLobbyLeft?.Invoke(this, EventArgs.Empty);
         } catch(LobbyServiceException e)
         {
@@ -565,7 +589,12 @@ public class GameLobbyService : IGameLobbyService
         CurrentLobby = MapToLobbyData(ugsLobby);
 
         Debug.Log($"Lobby state changed to: {CurrentLobby.lobbyState}");
-
+        
+        if(CurrentLobby.lobbyState != LobbyState.Waiting && !_hostAuthority.IsHost)
+        {
+            Feedback.Instance?.ShowLobbyState(CurrentLobby.lobbyState.ToString());
+        }
+        
         _hostAuthority.UpdateHost(ugsLobby.HostId);
         
         OnLocalLobbyUpdated?.Invoke(this, CurrentLobby);
@@ -651,6 +680,9 @@ public class GameLobbyService : IGameLobbyService
         while(countDown > 0)
         {
             Debug.Log($"Game starts in: {countDown}");
+
+            Feedback.Instance?.ShowLobbyState(countDown.ToString());
+            
             await Task.Delay(1000); // 1s
             countDown--;
         }
@@ -661,6 +693,8 @@ public class GameLobbyService : IGameLobbyService
         NetworkManager.Singleton.OnServerStarted += HandleServerStarted;
 
         RelayConnectionManager.Instance.StartHost();
+
+        await Task.Delay(k_webglHostBootDelay);
         
         // Set InGame state when count down done
         await LobbyService.Instance.UpdateLobbyAsync(
@@ -718,6 +752,8 @@ public class GameLobbyService : IGameLobbyService
 
             if (success)
             {
+                await Task.Delay(k_webglClientReadyDelay);
+                
                 RelayConnectionManager.Instance.StartClient();
                 _relayPrepared = true;
                 Debug.Log("Relay ready, waiting for InGame State");
@@ -790,7 +826,7 @@ public class GameLobbyService : IGameLobbyService
                characterId = player.Data.
                             TryGetValue(LobbyKeys.CHARACTER_ID, out var charId) 
                                 ? charId.Value 
-                                : "Cat_01",
+                                : "rifle",
 
                isHost = player.Id == ugsLobby.HostId,
  
