@@ -23,29 +23,65 @@ public class MapSelectionUI : MonoBehaviour
         previousBtn.onClick.AddListener(MapSelectionManager.Instance.Previous);
         MapSelectionManager.Instance.OnMapChanged += RefreshUI;
 
-        bool isHost = ServiceLocator.GameLobbyService.GetHostAuthority().IsHost;
-        nextBtn.gameObject.SetActive(isHost);
-        previousBtn.gameObject.SetActive(isHost);
-
         RefreshUI(MapSelectionManager.Instance.SelectedMap);
+
     }
 
+    private void OnEnable()
+    {
+        if(ServiceLocator.GameLobbyService != null)
+        {
+            ServiceLocator.GameLobbyService.OnLocalLobbyUpdated += HandleLobbyUpdated;
+            RefreshHostUI();
+        }
+    }
+    
     private void OnDisable()
     {
         nextBtn.onClick.RemoveListener(MapSelectionManager.Instance.Next);
         previousBtn.onClick.RemoveListener(MapSelectionManager.Instance.Previous);
         MapSelectionManager.Instance.OnMapChanged -= RefreshUI;
         
+        if(ServiceLocator.GameLobbyService != null)
+        {
+            ServiceLocator.GameLobbyService.OnLocalLobbyUpdated -= HandleLobbyUpdated;
+        }
     }
 
     #endregion
 
+    #region Event
+
+    private void HandleLobbyUpdated(object sender, LobbyData e)
+    {
+        RefreshHostUI();
+    }
+    
+    #endregion
+    
     #region UI
 
     private void RefreshUI(MapInfo mapInfo)
     {
         thumbnail.sprite = mapInfo.mapThumbnail;
         mapNameText.text = mapInfo.mapName;
+    }
+
+    private void RefreshHostUI()
+    {
+        var lobby = ServiceLocator.GameLobbyService;
+
+        if(lobby == null)
+        {
+            nextBtn.gameObject.SetActive(false);
+            previousBtn.gameObject.SetActive(false);
+            return;
+        }
+
+        bool isHost = ServiceLocator.GameLobbyService.GetHostAuthority.IsHost;
+        nextBtn.gameObject.SetActive(isHost);
+        previousBtn.gameObject.SetActive(isHost);
+ 
     }
     
     #endregion

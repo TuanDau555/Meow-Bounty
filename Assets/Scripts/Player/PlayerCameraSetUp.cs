@@ -103,6 +103,7 @@ public class PlayerCameraSetUp : NetworkBehaviour
         if(!IsOwner) return;
 
         MoveToNormalPos();
+        InputManager.Instance.EnableFiring();
     }
 
     private void HandleDeath(object sender, EventArgs e)
@@ -111,6 +112,7 @@ public class PlayerCameraSetUp : NetworkBehaviour
         if(!IsOwner) return;
 
         SpectatorManager.Instance.UnRegisterPlayer(transform);
+        InputManager.Instance.DisableFiring();
 
         EnterSpectatorMode();
     }

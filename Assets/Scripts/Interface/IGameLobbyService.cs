@@ -11,7 +11,7 @@ public interface IGameLobbyService
     LobbyData CurrentLobby { get; }
     
     [UnityEngine.Scripting.Preserve]
-    IHostAuthority GetHostAuthority();
+    IHostAuthority GetHostAuthority { get; }
 
     [UnityEngine.Scripting.Preserve]
     event EventHandler<LobbyData> OnLocalLobbyUpdated;

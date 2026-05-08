@@ -34,8 +34,9 @@ public class CollectibleItem : NetworkBehaviour, IInteractable
     private void Update()
     {
         if(!IsServer) return;
-        IsCollectedDestroy();
+        if(_isCollected) return;
         if(_interactPlayer == ulong.MaxValue) return;
+        IsCollectedDestroy();
 
         _interactTimer += Time.deltaTime;
 
@@ -75,8 +76,13 @@ public class CollectibleItem : NetworkBehaviour, IInteractable
         if(_isCollected) return;
         _isCollected = true;
 
+        _interactPlayer = ulong.MaxValue;
+        _interactTimer = 0f;
+        
         Debug.Log($"Item collect by player {playerId}");
 
+        ResetProgressClientRpc(playerId);
+        
         _manager?.OnItemCollected();
 
         // TODO: some effect may need will be execute here...
@@ -94,7 +100,7 @@ public class CollectibleItem : NetworkBehaviour, IInteractable
     {
         if (!IsCollected()) return;
         Debug.LogWarning("[IsCollected] Exception met");
-        HybridPool.Despawn(gameObject);
+        // HybridPool.Despawn(gameObject);
         
     }
     
@@ -135,6 +141,7 @@ public class CollectibleItem : NetworkBehaviour, IInteractable
     private void ResetProgressClientRpc(ulong targetId)
     {
         if(NetworkManager.Singleton.LocalClientId != targetId) return;
+        if(interactableUI == null) return;
         interactableUI.SetProgress(0);
     }
     

@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class EndGameUI : Singleton<EndGameUI> 
+public class EndGameUI : SingletonNetwork<EndGameUI> 
 {
     #region Parameters
 
@@ -87,6 +87,10 @@ public class EndGameUI : Singleton<EndGameUI>
         // Despawn all the objects before shutdown
         if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsServer)
         {
+            ForceAllClientsToMenuClientRpc();
+
+            await Task.Delay(500);
+            
             var spawnedObjects = new List<NetworkObject>(
                 NetworkManager.Singleton.SpawnManager.SpawnedObjectsList
             );
@@ -113,5 +117,34 @@ public class EndGameUI : Singleton<EndGameUI>
 
     }
     
+    #endregion
+
+    #region RPC
+
+    [ClientRpc]
+    private void ForceAllClientsToMenuClientRpc()
+    {
+        if(NetworkManager.Singleton.IsServer) return;
+
+        _ = ForceClientToMenuAsync();
+    }
+    
+    private async Task ForceClientToMenuAsync()
+    {
+        await VivoxManager.Instance.LeaveChannelAsync();
+
+        NetworkManager.Singleton.Shutdown();
+
+        while (NetworkManager.Singleton != null && NetworkManager.Singleton.ShutdownInProgress)
+        {
+            await Task.Yield();
+        }
+
+        Time.timeScale = 1;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        SceneManager.LoadScene("Main Menu Tuan");
+
+    }
     #endregion
 }

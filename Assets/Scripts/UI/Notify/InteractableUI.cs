@@ -42,12 +42,17 @@ public class InteractableUI : MonoBehaviour
     public void HideUI()
     {
         _playerCam = null;
-        uiRoot?.gameObject?.SetActive(false);
-        progressImage.fillAmount = 0;
+
+        if (uiRoot != null)
+            uiRoot.gameObject.SetActive(false);
+
+        if (progressImage != null)
+            progressImage.fillAmount = 0;
     }
 
     public void SetProgress(float progress)
     {
+        if(progressImage == null) return;
         progressImage.fillAmount = Mathf.Clamp01(progress);
     }
     

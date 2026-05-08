@@ -303,7 +303,7 @@ public class LobbyListView : MonoBehaviour
         }
         
         // if not host
-        if (!_gameLobbyService.GetHostAuthority().IsHost)
+        if (!_gameLobbyService.GetHostAuthority.IsHost)
         {
             readyBtn.gameObject.SetActive(true);
             startGameBtn.gameObject.SetActive(false);
@@ -331,7 +331,7 @@ public class LobbyListView : MonoBehaviour
     private void BindLobbyService()
     {
         _gameLobbyService = ServiceLocator.GameLobbyService;
-        _hostAuthority = _gameLobbyService.GetHostAuthority();
+        _hostAuthority = _gameLobbyService.GetHostAuthority;
 
         _gameLobbyService.OnLocalLobbyUpdated += OnLocalLobbyUpdated;
         _gameLobbyService.OnLobbyLeft += OnLobbyLeft;

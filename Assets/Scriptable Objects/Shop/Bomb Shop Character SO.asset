@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f49fc867ef4a8874d844d53e32884045, type: 3}
   m_Name: Bomb Shop Character SO
   m_EditorClassIdentifier: 
-  characterId: Cat_02
+  characterId: bomber
   characterDefinitionSO: {fileID: 11400000, guid: 053284d0683036e4892d8b5897cbc9b3,
     type: 2}
   basePrice: 300

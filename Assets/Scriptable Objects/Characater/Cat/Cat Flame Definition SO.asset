@@ -12,18 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89af1531afb7ad247a6ff0a453d29942, type: 3}
   m_Name: Cat Flame Definition SO
   m_EditorClassIdentifier: 
-  id: Cat_03
+  id: flame
   displayName: Cat Flame
-  icon: {fileID: 0}
-  description: 
+  icon: {fileID: 21300000, guid: 73f8e845826abb74ab498b86877246a2, type: 3}
+  description: Healing your scar
   characterPrefab: {fileID: 8271282784123907453, guid: 393700c31e5c0794f87fd32e7f9bb58e,
     type: 3}
-  previewPrefab: {fileID: 8421418390401627055, guid: b415bd587f1036d42b68927a9f555d27,
+  previewPrefab: {fileID: 1882967282550238916, guid: e9a1c57de8551dd46b515cdfe81d1b5a,
     type: 3}
   characterStats:
-    HP: 100
-    defend: 2.51
-    damage: 36.5
+    HP: 50
+    defend: 7
+    damage: 17.6
     stamina: 1
     useStamina: 0
     staminaUseMultiplier: 5

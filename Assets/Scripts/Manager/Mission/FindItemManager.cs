@@ -182,6 +182,7 @@ public class FindItemManager : SingletonNetwork<FindItemManager>
         if(obj != null && obj.TryGetComponent<CollectibleItem>(out var item))
         {
             item.Intit(this);
+            Debug.Log($"Item name: {obj.name}");
         }
     }
 

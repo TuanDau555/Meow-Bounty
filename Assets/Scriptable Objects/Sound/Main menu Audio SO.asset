@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa67c0bb101b15f478ad3d9bb204ce2e, type: 3}
-  m_Name: Shop Database SO
+  m_Script: {fileID: 11500000, guid: 211085d2dd0377443a59f94362ee3b0d, type: 3}
+  m_Name: Main menu Audio SO
   m_EditorClassIdentifier: 
-  items:
-  - {fileID: 11400000, guid: dbef8c697ab5bf04b9719564aa257dae, type: 2}
-  - {fileID: 11400000, guid: 7e9ec532c8c88124ca4f2306f8716651, type: 2}
+  music: {fileID: 8300000, guid: 42a68138c76b5734db3454084bb125c0, type: 3}
+  ambientSound: []
+  sfxList: []

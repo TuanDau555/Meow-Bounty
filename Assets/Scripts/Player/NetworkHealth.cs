@@ -213,7 +213,6 @@ public class NetworkHealth : NetworkBehaviour, IDamageable
         
         // Change to Alive state
         State.Value = LifeState.Alive;
-        InputManager.Instance.EnableFiring();
         // Notify all clients
         RevivedClientRpc();
 
@@ -232,7 +231,6 @@ public class NetworkHealth : NetworkBehaviour, IDamageable
         
         State.Value = LifeState.Dead;
         CurrentHealth.Value = 0f;
-        InputManager.Instance.DisableFiring();
         // Notify all clients
         DeathClientRpc();
 

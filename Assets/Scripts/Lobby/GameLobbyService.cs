@@ -20,6 +20,14 @@ public class GameLobbyService : IGameLobbyService
     private const float k_pollInterval = 1.5f;
     private const int k_heartbeatInterval = 15000; // 15s
 
+#if UNITY_WEBGL && !UNITY_EDITOR
+    private const int k_webglHostBootDelay = 2500;     // wait transport boot
+    private const int k_webglClientReadyDelay = 1500;  // wait relay setup
+#else
+    private const int k_webglHostBootDelay = 300;
+    private const int k_webglClientReadyDelay = 300;
+#endif
+    
     private bool _relayPrepared = false;
     
     // Room event
@@ -34,7 +42,7 @@ public class GameLobbyService : IGameLobbyService
     private IHostAuthority _hostAuthority;
     private PlayerProfileService profileService;
 
-    public IHostAuthority GetHostAuthority() => _hostAuthority;
+    public IHostAuthority GetHostAuthority => _hostAuthority;
     public LobbyData CurrentLobby { get; private set; }
     #endregion
 
@@ -685,6 +693,8 @@ public class GameLobbyService : IGameLobbyService
         NetworkManager.Singleton.OnServerStarted += HandleServerStarted;
 
         RelayConnectionManager.Instance.StartHost();
+
+        await Task.Delay(k_webglHostBootDelay);
         
         // Set InGame state when count down done
         await LobbyService.Instance.UpdateLobbyAsync(
@@ -742,6 +752,8 @@ public class GameLobbyService : IGameLobbyService
 
             if (success)
             {
+                await Task.Delay(k_webglClientReadyDelay);
+                
                 RelayConnectionManager.Instance.StartClient();
                 _relayPrepared = true;
                 Debug.Log("Relay ready, waiting for InGame State");

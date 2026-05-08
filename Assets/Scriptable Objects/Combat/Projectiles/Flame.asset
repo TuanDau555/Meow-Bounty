@@ -16,5 +16,5 @@ MonoBehaviour:
   projectilePrefab: {fileID: 15794502400009381, guid: 66cef333b7569c84796aa770d92dfb97,
     type: 3}
   speed: 20
-  damage: 10
+  damage: 17.6
   range: 15
